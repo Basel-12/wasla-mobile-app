@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { ImageSourcePropType } from "react-native";
 
 export type OnboardingSlide = {
@@ -9,30 +10,29 @@ export type OnboardingSlide = {
 	buttonText: string;
 };
 
-export const slides = [
-	{
-		id: "1",
-		image: require("../../../../assets/images/onboarding/slide1.png"),
-		title: "Communicate Without Barriers",
-		description:
-			"Bridging the gap between sign language and spoken words in real-time with our advanced AI technology.",
-		buttonText: "Next",
-	},
-	{
-		id: "2",
-		image: require("../../../../assets/images/onboarding/slide2.png"),
-		title: "Translate Signs",
-		highlightedWord: "Instantly",
-		description:
-			"Point your camera at any hand sign to get real-time text and audio translations. Communication made effortless.",
-		buttonText: "Continue",
-	},
-	{
-		id: "3",
-		image: require("../../../../assets/images/onboarding/slide3.png"),
-		title: "Connect With the Community",
-		description:
-			"Join a vibrant community where you can share experiences, learn together, and build lasting connections with SignBridge users worldwide.",
-		buttonText: "Get Started",
-	},
-];
+export const useSlides = () => {
+	const { t } = useTranslation();
+	return [
+		{
+			id: "1",
+			image: require("../../../../assets/images/onboarding/slide1.png"),
+			title: t("onboarding.slide1.title"),
+			description: t("onboarding.slide1.description"),
+			buttonText: t("onboarding.slide1.buttonText"),
+		},
+		{
+			id: "2",
+			image: require("../../../../assets/images/onboarding/slide2.png"),
+			title: t("onboarding.slide2.title"),
+			description: t("onboarding.slide2.description"),
+			buttonText: t("onboarding.slide2.buttonText"),
+		},
+		{
+			id: "3",
+			image: require("../../../../assets/images/onboarding/slide3.png"),
+			title: t("onboarding.slide3.title"),
+			description: t("onboarding.slide3.description"),
+			buttonText: t("onboarding.slide3.buttonText"),
+		},
+	];
+};

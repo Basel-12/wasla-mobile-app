@@ -13,12 +13,13 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { OnboardingSlide } from "../components/OnboardingSlide";
-import { slides } from "../data/onboarding.data";
+import { useSlides } from "../data/onboarding.data";
 const { width } = Dimensions.get("window");
 export const OnboardingScreen = () => {
 	const [currentIndex, setCurrentIndex] = useState(0);
 	const flatListRef = useRef<FlatList>(null);
 	const insets = useSafeAreaInsets();
+	const slides = useSlides();
 
 
 	const handleViewableItemsChanged = useCallback(
