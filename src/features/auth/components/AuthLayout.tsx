@@ -6,7 +6,7 @@ export const AuthLayout = ({ children }: { children: React.ReactNode }) => {
 	return (
 		<KeyboardAvoidingView
 			behavior={Platform.OS === "ios" ? "padding" : "height"}
-			className="flex-1 bg-white"
+			className="flex-1 bg-bgGrey"
 			style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}
 		>
 			<View className="flex-1 px-6">{children}</View>

@@ -21,15 +21,15 @@ export const OnboardingSlide = ({ slide }: OnboardingSlideProps) => {
 			);
 		}
 		return (
-			<Text className="text-3xl font-bold text-center text-black">
+			<Text className="text-5xl leading-tight font-bold text-black">
 				{slide.title}
 			</Text>
 		);
 	};
 	return (
 		<View style={{ width }} className="flex-1 items-center px-6">
-			<View className="flex-1 justify-center items-center w-full mt-8">
-				<View className="w-full aspect-square rounded-3xl overflow-hidden bg-bgGrey shadow-lg">
+			<View className="justify-center items-center w-full">
+				<View className="w-full aspect-square rounded-3xl overflow-hidden bg-bgGrey">
 					<Image
 						source={slide.image}
 						style={{ width: "100%", height: "100%" }}
@@ -37,9 +37,10 @@ export const OnboardingSlide = ({ slide }: OnboardingSlideProps) => {
 					/>
 				</View>
 			</View>
-			<View className="py-8 items-center">
+			<View className="py-8">
+				<View className="h-1 w-14 bg-secondary rounded-full"/>
 				{renderTitle()}
-				<Text className="text-base text-gray-500 text-center mt-4 leading-6 px-4">
+				<Text className="text-base text-gray-500 mt-2 leading-6 ">
 					{slide.description}
 				</Text>
 			</View>

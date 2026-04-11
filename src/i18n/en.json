@@ -2,18 +2,30 @@
     "onboarding": {
         "slide1": {
             "title": "Communicate Without Barriers",
-            "description": "Bridging the gap between sign language and spoken words in real-time with our advanced AI technology.",
+            "description": "Bridging sign language and spoken words in real-time with AI.",
             "buttonText": "Next"
         },
         "slide2": {
             "title": "Translate Signs Instantly",
-            "description": "Point your camera at any hand sign to get real-time text and audio translations. Communication made effortless.",
+            "description": "Point your camera at any hand sign Communication made effortless.",
             "buttonText": "Continue"
         },
         "slide3": {
             "title": "Connect With the Community",
-            "description": "Join a vibrant community where you can share experiences, learn together, and build lasting connections with SignBridge users worldwide.",
+            "description": "Join a vibrant community where you can share experiences, learn together, and build lasting connections.",
             "buttonText": "Get Started"
+        },
+        "skip": "Skip"
+    },
+    "auth": {
+        "login": {
+            "title": "Welcome Back",
+            "subtitle": "Sign in to your account to continue",
+            "email": "Email",
+            "password": "Password",
+            "forgotPassword": "Forgot Password?",
+            "signIn": "Sign In",
+            "signUp": "Don't have an account? Sign Up"
         }
     }
 }
