@@ -12,14 +12,15 @@ export const AuthForm = ({ title, subtitle, children, footer }: AuthFormProps) =
     const { t } = useTranslation();
     
     return (
-        <View className=" bg-white rounded-xl py-6 px-2 my-auto border border-gray-200/50">
+        <View className=" bg-white rounded-3xl p-6   border border-gray-200/50 gap-6">
+            <View className="bg-secondary h-1 w-14 rounded-full" />
             {/* Header */}
-            <View className="mb-8">
-                <Text className="text-3xl font-bold text-gray-900 text-center">
+            <View className="">
+                <Text className="text-5xl font-bold text-gray-900 w-2/3 ">
                     {title}
                 </Text>
                 {subtitle && (
-                    <Text className="text-base text-gray-500 mt-2 text-center">
+                    <Text className="text-base text-gray-500 mt-2 ">
                         {subtitle}
                     </Text>
                 )}

@@ -8,8 +8,9 @@ import {
 } from "@expo-google-fonts/cairo";
 import { SplashScreen, Stack } from "expo-router";
 import { useEffect, useState } from "react";
-import { StatusBar, View } from "react-native";
+import { StatusBar, Text, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import Toast from "react-native-toast-message";
 import "../../global.css";
 
 SplashScreen.preventAutoHideAsync();
@@ -34,6 +35,48 @@ export default function RootLayout() {
 	if (!isReady) {
 		return null;
 	}
+	const toastConfig = {
+		success: ({ text1, text2 }: { text1?: string; text2?: string }) => (
+			<View className="bg-white border-l-4 border-green-500 rounded-xl px-4 py-3 mx-4 shadow-md">
+				{text1 && (
+					<Text
+						style={{ fontFamily: "Cairo_700Bold" }}
+						className="text-gray-900"
+					>
+						{text1}
+					</Text>
+				)}
+				{text2 && (
+					<Text
+						style={{ fontFamily: "Cairo_400Regular" }}
+						className="text-gray-500 text-sm"
+					>
+						{text2}
+					</Text>
+				)}
+			</View>
+		),
+		error: ({ text1, text2 }: { text1?: string; text2?: string }) => (
+			<View className="bg-white border-l-4 border-red-500 rounded-xl px-4 py-3 mx-4 shadow-md">
+				{text1 && (
+					<Text
+						style={{ fontFamily: "Cairo_700Bold" }}
+						className="text-gray-900"
+					>
+						{text1}
+					</Text>
+				)}
+				{text2 && (
+					<Text
+						style={{ fontFamily: "Cairo_400Regular" }}
+						className="text-gray-500 text-sm"
+					>
+						{text2}
+					</Text>
+				)}
+			</View>
+		),
+	};
 
 	return (
 		<>
@@ -46,6 +89,7 @@ export default function RootLayout() {
 					</Stack>
 				</SafeAreaProvider>
 			</View>
+			<Toast config={toastConfig} position="bottom" />
 		</>
 	);
 }
