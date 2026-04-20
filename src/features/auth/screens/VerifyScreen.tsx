@@ -28,11 +28,11 @@ export default function VerifyScreen() {
 				userId as string,
 				code as string,
 			);
-			Toast.show({
-				type: "success",
-				text1: response.message,
-			});
 			if (type === "signup") {
+				Toast.show({
+					type: "success",
+					text1: response.message,
+				});
 				router.replace("/(auth)/login" as Href);
 			}
 			if (type === "login") {
