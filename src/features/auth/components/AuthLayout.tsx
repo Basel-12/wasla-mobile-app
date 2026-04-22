@@ -7,16 +7,19 @@ export const AuthLayout = ({ children }: { children: React.ReactNode }) => {
 		<KeyboardAvoidingView
 			behavior={Platform.OS === "ios" ? "padding" : "height"}
 			className="flex-1 bg-bgGrey"
-			style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}
+			style={{ paddingTop: insets.top }}
 		>
 			<ScrollView
 				contentContainerStyle={{
 					flexGrow: 1,
 					paddingHorizontal: 24,
-					justifyContent: "center",
+					paddingVertical: 32,
+					justifyContent: 'center',
+					paddingBottom: insets.bottom + 56, 
 				}}
 				// className="flex-1 px-6"
 				keyboardShouldPersistTaps="handled"
+				// keyboardDismissMode="on-drag"
 				showsVerticalScrollIndicator={false}
 			>
 				{children}

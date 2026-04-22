@@ -22,11 +22,18 @@ export const authService = {
 		return response.data;
 	},
 
-	verify: async (userId: string, code: string) => {
+	verify: async (email: string, code: string) => {
 		const response = await api.post("/api/v1/auth/verify-otp", {
-			userId,
+			email,
 			otp: code,
 		});
 		return response.data;
 	},
+
+	resendOtp: async (email: string) => {
+		const response = await api.post("/api/v1/auth/resend-otp", {
+			email,
+		});
+		return response.data;
+	}
 };

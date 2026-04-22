@@ -5,7 +5,7 @@ import { Href, router } from "expo-router";
 import React, { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Keyboard, Text, TextInput, TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
 import { AuthForm } from "../components/AuthForm";
 import { AuthLayout } from "../components/AuthLayout";
@@ -32,6 +32,7 @@ export const SignupScreen = () => {
 
 	const onSubmit = async (data: SignupForm) => {
 		try {
+			Keyboard.dismiss();
 			setIsLoading(true);
 			const response = await authService.signup(
 				data.name,
@@ -43,11 +44,10 @@ export const SignupScreen = () => {
 				text1: response.message,
 				visibilityTime: 2000,
 			});
-			const userId = response.data.id;
 			router.replace({
 				pathname: "/(auth)/verify",
 				params: {
-					userId,
+					email: data.email,
 					type: "signup",
 				}
 			});
@@ -93,7 +93,7 @@ export const SignupScreen = () => {
 									accessibilityRole="text"
 									accessibilityState={{ disabled: false }}
 									accessibilityValue={{ text: "" }}
-									className="border bg-[#F3F4F9] border-gray-300 rounded-2xl p-4 focus:border-mainBlue"
+									className="border bg-[#F3F4F9] border-gray-300 rounded-2xl p-4 focus:border-mainBlue text-black"
 									multiline={false}
 									onChangeText={onChange}
 									onBlur={onBlur}
@@ -128,7 +128,7 @@ export const SignupScreen = () => {
 									accessibilityRole="text"
 									accessibilityState={{ disabled: false }}
 									accessibilityValue={{ text: "" }}
-									className="border bg-[#F3F4F9] border-gray-300 rounded-2xl p-4 focus:border-mainBlue"
+									className="border bg-[#F3F4F9] border-gray-300 rounded-2xl p-4 focus:border-mainBlue text-black"
 									multiline={false}
 									onChangeText={onChange}
 									onBlur={onBlur}
@@ -166,7 +166,7 @@ export const SignupScreen = () => {
 									accessibilityRole="text"
 									accessibilityState={{ disabled: false }}
 									accessibilityValue={{ text: "" }}
-									className="border bg-[#F3F4F9] border-gray-300 rounded-2xl p-4 focus:border-mainBlue"
+									className="border bg-[#F3F4F9] border-gray-300 rounded-2xl p-4 focus:border-mainBlue text-black"
 									multiline={false}
 									onChangeText={onChange}
 									onBlur={onBlur}
@@ -206,7 +206,7 @@ export const SignupScreen = () => {
 									accessibilityRole="text"
 									accessibilityState={{ disabled: false }}
 									accessibilityValue={{ text: "" }}
-									className="border bg-[#F3F4F9] border-gray-300 rounded-2xl p-4 focus:border-mainBlue"
+									className="border bg-[#F3F4F9] border-gray-300 rounded-2xl p-4 focus:border-mainBlue text-black"
 									multiline={false}
 									onChangeText={onChange}
 									onBlur={onBlur}

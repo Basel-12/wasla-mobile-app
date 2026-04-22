@@ -17,7 +17,7 @@ export default function VerifyScreen() {
 	const [currInd, setCurrInd] = useState(0);
 	const [secondsLeft, setSecondsLeft] = useState(TIMERSECONDS);
 	const [canResend, setCanResend] = useState(false);
-	const { userId, type, email, password } = useLocalSearchParams();
+	const {  type, email, password } = useLocalSearchParams();
 	const [isLoading, setIsLoading] = useState(false);
 	const [code, setCode] = useState("");
 
@@ -25,7 +25,7 @@ export default function VerifyScreen() {
 		try {
 			setIsLoading(true);
 			const response = await authService.verify(
-				userId as string,
+				email as string,
 				code as string,
 			);
 			if (type === "signup") {
@@ -43,7 +43,7 @@ export default function VerifyScreen() {
 				});
 				//set the token in the storage
 				await StorageService.setItemSecure(StorageKeys.TOKEN, response.data)
-				router.replace("/(app)/home" as Href);
+				router.replace("/(app)/(home)" as Href);
 			}
 		} catch (error) {
 			if (error instanceof AxiosError) {
@@ -59,6 +59,26 @@ export default function VerifyScreen() {
 		}
 	};
 
+	const handleResendOtp = async ()=>{
+		try {
+			const response = await authService.resendOtp(email as string);
+			Toast.show({
+				type: "success",
+				text1: response.message,
+			});
+			setCanResend(false);
+			setSecondsLeft(TIMERSECONDS);
+		}catch(error){
+			if (error instanceof AxiosError) {
+				Toast.show({
+					type: "error",
+					text1:
+						error.response?.data.message ||
+						"An unknown error occurred",
+				});
+			}
+		}
+	}
 	useEffect(() => {
 		if (secondsLeft <= 0) {
 			setCanResend(true);
@@ -132,7 +152,7 @@ export default function VerifyScreen() {
 						{t("auth.verify.didntReceive")}
 					</Text>
 					<TouchableOpacity
-						// onPress={() => router.push("/(auth)/login" as Href)}
+						onPress={handleResendOtp}
 						disabled={!canResend}
 					>
 						<Text

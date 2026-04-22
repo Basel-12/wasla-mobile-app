@@ -2,10 +2,10 @@ import CustomButton from "@/components/CustomButton";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosError } from "axios";
 import { Href, router } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Keyboard, Text, TextInput, TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
 import { AuthForm } from "../components/AuthForm";
 import { AuthLayout } from "../components/AuthLayout";
@@ -19,6 +19,7 @@ export default function LoginScreen() {
 	const [isFocusedEmail, setIsFocusedEmail] = useState(false);
 	const [isFocusedPassword, setIsFocusedPassword] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
+	const [isCheckingToken, setIsCheckingToken] = useState(true);
 	const {
 		control,
 		handleSubmit,
@@ -32,8 +33,23 @@ export default function LoginScreen() {
 		},
 	});
 
+	useEffect(() => {
+		const checkToken = async () => {
+			const token = await StorageService.getItemSecure(StorageKeys.TOKEN, false);
+			// if (token) {
+			// 	router.replace("/(app)/(home)" as Href);
+			// }
+			// else{
+			// 	setIsCheckingToken(false);
+			// }
+			setIsCheckingToken(false);
+		};
+		checkToken();
+	}, []);
+
 	const onSubmit = async (data: LoginForm) => {
 		try {
+			Keyboard.dismiss();
 			setIsLoading(true);
 			const response = await authService.login(data.email, data.password);
 			Toast.show({
@@ -42,7 +58,7 @@ export default function LoginScreen() {
 			});
 			//set the token in the storage 
 			await StorageService.setItemSecure(StorageKeys.TOKEN, response.data)
-			router.push("/(app)/home" as Href);
+			router.push("/(app)/(home)" as Href);
 		} catch (error) {
 			if (error instanceof AxiosError) {
 				Toast.show({
@@ -63,6 +79,9 @@ export default function LoginScreen() {
 			setIsLoading(false);
 		}
 	};
+
+	if (isCheckingToken) return null;
+	
 	return (
 		<AuthLayout>
 			<AuthForm
@@ -92,7 +111,7 @@ export default function LoginScreen() {
 									accessibilityState={{ disabled: false }}
 									accessibilityValue={{ text: "" }}
 									multiline={false}
-									className={`border bg-[#F3F4F9] border-gray-300 rounded-2xl p-4   ${errors.email ? "border-red-500" : isFocusedEmail ? "border-mainBlue" : "border-gray-300"}`}
+									className={`text-black border bg-[#F3F4F9] border-gray-300 rounded-2xl p-4   ${errors.email ? "border-red-500" : isFocusedEmail ? "border-mainBlue" : "border-gray-300"}`}
 									onChangeText={onChange}
 									onBlur={() => {
 										onBlur();
@@ -149,7 +168,7 @@ export default function LoginScreen() {
 									accessibilityRole="text"
 									accessibilityState={{ disabled: false }}
 									accessibilityValue={{ text: "" }}
-									className={`border bg-[#F3F4F9] border-gray-300 rounded-2xl p-4   ${errors.password ? "border-red-500" : isFocusedPassword ? "border-mainBlue" : "border-gray-300"}`}
+									className={`text-black border bg-[#F3F4F9] border-gray-300 rounded-2xl p-4   ${errors.password ? "border-red-500" : isFocusedPassword ? "border-mainBlue" : "border-gray-300"}`}
 									multiline={false}
 									onChangeText={onChange}
 									onBlur={() => {

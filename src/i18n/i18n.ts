@@ -37,16 +37,16 @@ i18n.use(initReactI18next).init({
 export const initializeLanguage = async () => {
     const language = await StorageService.getItem(StorageKeys.Language, false);
 
-    // if(language){
-    //     i18n.changeLanguage(language);
-    //     return language;
-    // }else{
+    if(language){
+        i18n.changeLanguage(language);
+        return language;
+    }else{
         const deviceLanguage = getLocales()[0]?.languageCode || 'en';
         const supportedLang = supportedLanguages.includes(deviceLanguage) ? deviceLanguage : 'en';
         i18n.changeLanguage(supportedLang);
-        // await StorageService.setItem(StorageKeys.Language, supportedLang);
+        await StorageService.setItem(StorageKeys.Language, supportedLang);
         return supportedLang;
-    // }
+    }
 }
 
 
