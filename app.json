@@ -4,16 +4,16 @@
     "slug": "gp-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/appicon.png",
+    "icon": "./assets/images/appicon2.png",
     "scheme": "gpmobile",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/images/appicon.png"
+      "icon": "./assets/images/appicon2.png"
     },
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#FFFFFF",
-        "foregroundImage": "./assets/images/appicon.png"
+        "foregroundImage": "./assets/images/appicon2.png"
       },
       "predictiveBackGestureEnabled": false,
       "package": "com.wasla.app"
