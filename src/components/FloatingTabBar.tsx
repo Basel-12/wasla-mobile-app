@@ -3,7 +3,11 @@ import { BlurView } from "expo-blur";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-export default function FloatingTabBar({ state, descriptors, navigation }: any) {
+export default function FloatingTabBar({
+	state,
+	descriptors,
+	navigation,
+}: any) {
 	const insets = useSafeAreaInsets();
 
 	return (

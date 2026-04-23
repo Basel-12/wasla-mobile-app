@@ -1,32 +1,33 @@
 import CustomButton from "@/components/CustomButton";
+import { StorageKeys } from "@/utils/constants";
 import { AxiosError } from "axios";
 import { Href, router, useLocalSearchParams } from "expo-router";
 import LottieView from "lottie-react-native";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Text, TextInput, TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
+import { StorageService } from "../../../services/storage.service";
 import { AuthLayout } from "../components/AuthLayout";
 import { authService } from "../services/auth.service";
-import { StorageService } from "../../../services/storage.service";
-import { StorageKeys } from "@/utils/constants";
 
 export default function VerifyScreen() {
 	const { t } = useTranslation();
 	const TIMERSECONDS = 60;
-	const [currInd, setCurrInd] = useState(0);
+	const OPTLENGTH = 6;
 	const [secondsLeft, setSecondsLeft] = useState(TIMERSECONDS);
 	const [canResend, setCanResend] = useState(false);
-	const {  type, email, password } = useLocalSearchParams();
+	const { type, email, password } = useLocalSearchParams();
 	const [isLoading, setIsLoading] = useState(false);
-	const [code, setCode] = useState("");
+	const [code, setCode] = useState<string[]>(Array(OPTLENGTH).fill(""));
+	const inputRefs = useRef<Array<TextInput | null>>([]);
 
 	const handleVerify = async () => {
 		try {
 			setIsLoading(true);
 			const response = await authService.verify(
 				email as string,
-				code as string,
+				code.join(""),
 			);
 			if (type === "signup") {
 				Toast.show({
@@ -36,13 +37,19 @@ export default function VerifyScreen() {
 				router.replace("/(auth)/login" as Href);
 			}
 			if (type === "login") {
-				const response = await authService.login(email as string, password as string);
+				const response = await authService.login(
+					email as string,
+					password as string,
+				);
 				Toast.show({
 					type: "success",
 					text1: response.message,
 				});
 				//set the token in the storage
-				await StorageService.setItemSecure(StorageKeys.TOKEN, response.data)
+				await StorageService.setItemSecure(
+					StorageKeys.TOKEN,
+					response.data,
+				);
 				router.replace("/(app)/(home)" as Href);
 			}
 		} catch (error) {
@@ -59,7 +66,7 @@ export default function VerifyScreen() {
 		}
 	};
 
-	const handleResendOtp = async ()=>{
+	const handleResendOtp = async () => {
 		try {
 			const response = await authService.resendOtp(email as string);
 			Toast.show({
@@ -68,7 +75,7 @@ export default function VerifyScreen() {
 			});
 			setCanResend(false);
 			setSecondsLeft(TIMERSECONDS);
-		}catch(error){
+		} catch (error) {
 			if (error instanceof AxiosError) {
 				Toast.show({
 					type: "error",
@@ -78,7 +85,34 @@ export default function VerifyScreen() {
 				});
 			}
 		}
-	}
+	};
+
+	const handleCodeChange = (index: number, value: string) => {
+		const char = value.slice(-1);
+		const newCode = [...code];
+		newCode[index] = char;
+		setCode(newCode);
+
+		if (char && index < OPTLENGTH - 1)
+			inputRefs.current[index + 1]?.focus();
+	};
+
+	const handleKeyPress = (
+		e: { nativeEvent: { key: string } },
+		index: number,
+	) => {
+		if (e.nativeEvent.key === "Backspace") {
+			if (index > 0) {
+				inputRefs.current[index - 1]?.focus();
+				const newCode = [...code];
+				newCode[index] = "";
+				setCode(newCode);
+			} else {
+				inputRefs.current[0]?.focus();
+			}
+		}
+	};
+
 	useEffect(() => {
 		if (secondsLeft <= 0) {
 			setCanResend(true);
@@ -90,7 +124,7 @@ export default function VerifyScreen() {
 		);
 		return () => clearInterval(timer);
 	}, [secondsLeft]);
-	
+
 	return (
 		<AuthLayout>
 			<View className="gap-6">
@@ -124,15 +158,17 @@ export default function VerifyScreen() {
 								maxLength={1}
 								keyboardType="phone-pad"
 								autoCapitalize="none"
-								autoComplete="off"
+								autoComplete="sms-otp"
 								autoCorrect={false}
-								autoFocus={ind === currInd}
+								textContentType="oneTimeCode"
+								// autoFocus={ind === 0}
 								value={code[ind]}
-								onChangeText={(text) => {
-									setCode((prev) => prev + text);
-									setCurrInd((prev) =>
-										prev + 1 < 6 ? prev + 1 : prev,
-									);
+								onChangeText={(text) =>
+									handleCodeChange(ind, text)
+								}
+								onKeyPress={(e) => handleKeyPress(e, ind)}
+								ref={(r) => {
+									inputRefs.current[ind] = r;
 								}}
 								className="w-12 h-16 rounded-2xl bg-gray-300 text-center text-2xl font-bold border border-gray-300 focus:border-secondary"
 							/>
@@ -144,7 +180,7 @@ export default function VerifyScreen() {
 					title={t("auth.verify.verify")}
 					fullWidth
 					onPress={handleVerify}
-					disabled={isLoading || code.length !== 6}
+					disabled={isLoading || code.join("").length !== 6}
 				/>
 
 				<View className="flex-row items-center justify-center gap-2">

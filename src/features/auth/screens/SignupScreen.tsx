@@ -1,11 +1,19 @@
 import CustomButton from "@/components/CustomButton";
+import i18n from "@/i18n/i18n";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosError } from "axios";
 import { Href, router } from "expo-router";
 import React, { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { Keyboard, Text, TextInput, TouchableOpacity, View } from "react-native";
+import {
+	Keyboard,
+	Text,
+	TextInput,
+	TouchableOpacity,
+	View,
+} from "react-native";
 import Toast from "react-native-toast-message";
 import { AuthForm } from "../components/AuthForm";
 import { AuthLayout } from "../components/AuthLayout";
@@ -29,6 +37,8 @@ export const SignupScreen = () => {
 		},
 	});
 	const [isLoading, setIsLoading] = useState(false);
+	const [showPassword, setShowPassword] = useState(false);
+	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
 	const onSubmit = async (data: SignupForm) => {
 		try {
@@ -49,7 +59,7 @@ export const SignupScreen = () => {
 				params: {
 					email: data.email,
 					type: "signup",
-				}
+				},
 			});
 		} catch (error) {
 			if (error instanceof AxiosError) {
@@ -85,6 +95,7 @@ export const SignupScreen = () => {
 							}) => (
 								<TextInput
 									placeholder={t("auth.signup.name")}
+									placeholderTextColor={"#63677E"}
 									keyboardType="default"
 									autoCapitalize="none"
 									autoComplete="name"
@@ -120,6 +131,7 @@ export const SignupScreen = () => {
 							}) => (
 								<TextInput
 									placeholder={t("auth.signup.email")}
+									placeholderTextColor={"#63677E"}
 									keyboardType="email-address"
 									autoCapitalize="none"
 									autoComplete="email"
@@ -153,25 +165,62 @@ export const SignupScreen = () => {
 							render={({
 								field: { onChange, onBlur, value },
 							}) => (
-								<TextInput
-									placeholder={t("auth.signup.password")}
-									keyboardType="default"
-									autoCapitalize="none"
-									autoComplete="password"
-									textContentType="password"
-									secureTextEntry={true}
-									accessibilityLabel={t(
-										"auth.signup.password",
-									)}
-									accessibilityRole="text"
-									accessibilityState={{ disabled: false }}
-									accessibilityValue={{ text: "" }}
-									className="border bg-[#F3F4F9] border-gray-300 rounded-2xl p-4 focus:border-mainBlue text-black"
-									multiline={false}
-									onChangeText={onChange}
-									onBlur={onBlur}
-									value={value}
-								/>
+								<View className="relative">
+									<TextInput
+										placeholder={t("auth.signup.password")}
+										placeholderTextColor={"#63677E"}
+										textAlign={
+											i18n.language === "ar"
+												? "right"
+												: "left"
+										}
+										style={{
+											writingDirection:
+												i18n.language === "ar"
+													? "rtl"
+													: "ltr",
+										}}
+										keyboardType="default"
+										autoCapitalize="none"
+										autoComplete="password"
+										textContentType="password"
+										secureTextEntry={!showPassword}
+										accessibilityLabel={t(
+											"auth.signup.password",
+										)}
+										accessibilityRole="text"
+										accessibilityState={{ disabled: false }}
+										accessibilityValue={{ text: "" }}
+										className="border bg-[#F3F4F9] border-gray-300 rounded-2xl p-4 focus:border-mainBlue text-black"
+										multiline={false}
+										onChangeText={onChange}
+										onBlur={onBlur}
+										value={value}
+									/>
+									<TouchableOpacity
+										onPress={() =>
+											setShowPassword(!showPassword)
+										}
+										className="absolute right-4 top-1/2 -translate-y-1/2"
+										activeOpacity={0.8}
+										accessibilityLabel={
+											showPassword
+												? "Hide password"
+												: "Show password"
+										}
+										accessibilityRole="button"
+									>
+										<Ionicons
+											name={
+												showPassword
+													? "eye-off-outline"
+													: "eye-outline"
+											}
+											size={22}
+											color="#63677E"
+										/>
+									</TouchableOpacity>
+								</View>
 							)}
 						/>
 						{errors.password && (
@@ -191,27 +240,66 @@ export const SignupScreen = () => {
 							render={({
 								field: { onChange, onBlur, value },
 							}) => (
-								<TextInput
-									placeholder={t(
-										"auth.signup.confirmPassword",
-									)}
-									keyboardType="default"
-									autoCapitalize="none"
-									autoComplete="password"
-									textContentType="password"
-									secureTextEntry={true}
-									accessibilityLabel={t(
-										"auth.signup.confirmPassword",
-									)}
-									accessibilityRole="text"
-									accessibilityState={{ disabled: false }}
-									accessibilityValue={{ text: "" }}
-									className="border bg-[#F3F4F9] border-gray-300 rounded-2xl p-4 focus:border-mainBlue text-black"
-									multiline={false}
-									onChangeText={onChange}
-									onBlur={onBlur}
-									value={value}
-								/>
+								<View className="relative">
+									<TextInput
+										placeholder={t(
+											"auth.signup.confirmPassword",
+										)}
+										textAlign={
+											i18n.language === "ar"
+												? "right"
+												: "left"
+										}
+										style={{
+											writingDirection:
+												i18n.language === "ar"
+													? "rtl"
+													: "ltr",
+										}}
+										placeholderTextColor={"#63677E"}
+										keyboardType="default"
+										autoCapitalize="none"
+										autoComplete="password"
+										textContentType="password"
+										secureTextEntry={!showConfirmPassword}
+										accessibilityLabel={t(
+											"auth.signup.confirmPassword",
+										)}
+										accessibilityRole="text"
+										accessibilityState={{ disabled: false }}
+										accessibilityValue={{ text: "" }}
+										className="border bg-[#F3F4F9] border-gray-300 rounded-2xl p-4 focus:border-mainBlue text-black"
+										multiline={false}
+										onChangeText={onChange}
+										onBlur={onBlur}
+										value={value}
+									/>
+									<TouchableOpacity
+										onPress={() =>
+											setShowConfirmPassword(
+												!showConfirmPassword,
+											)
+										}
+										className="absolute right-4 top-1/2 -translate-y-1/2"
+										activeOpacity={0.8}
+										accessibilityLabel={
+											showConfirmPassword
+												? "Hide password"
+												: "Show password"
+										}
+										accessibilityRole="button"
+									>
+										<Ionicons
+											name={
+												showConfirmPassword
+													? "eye-off-outline"
+													: "eye-outline"
+											}
+											size={22}
+											color="#63677E"
+										/>
+									</TouchableOpacity>
+								</View>
 							)}
 						/>
 						{errors.confirmPassword && (

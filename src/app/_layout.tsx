@@ -48,9 +48,7 @@ export default function RootLayout() {
 			router.replace(initialRoute);
 		}
 	}, [isReady, initialRoute]);
-	if (!isReady) {
-		return null;
-	}
+
 	const toastConfig = {
 		success: ({ text1, text2 }: { text1?: string; text2?: string }) => (
 			<View className="bg-white border-l-4 border-green-500 rounded-xl px-4 py-3 mx-4 shadow-md">
@@ -94,19 +92,39 @@ export default function RootLayout() {
 		),
 	};
 
+	if (!isReady) {
+		return (
+			<SafeAreaProvider>
+				<StatusBar
+					backgroundColor="#f6f6f8"
+					barStyle="dark-content"
+					translucent={false}
+				/>
+			</SafeAreaProvider>
+		);
+	}
+
 	return (
 		<>
-			<View style={{ flex: 1, backgroundColor: "#f6f6f8" }}>
-				<StatusBar backgroundColor="#f6f6f8" barStyle="dark-content" />
-				<SafeAreaProvider>
+			<SafeAreaProvider>
+				<StatusBar
+					backgroundColor="#f6f6f8"
+					barStyle="dark-content"
+					translucent={false}
+				/>
+				<View style={{ flex: 1, backgroundColor: "#f6f6f8" }}>
 					<Stack screenOptions={{ headerShown: false }}>
 						<Stack.Screen name="(onboarding)" />
 						<Stack.Screen name="(auth)" />
 						<Stack.Screen name="(app)" />
 					</Stack>
-				</SafeAreaProvider>
-			</View>
-			<Toast config={toastConfig} position="bottom" />
+				</View>
+				<Toast
+					config={toastConfig}
+					position="bottom"
+					visibilityTime={2500}
+				/>
+			</SafeAreaProvider>
 		</>
 	);
 }

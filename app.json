@@ -1,63 +1,69 @@
 {
-  "expo": {
-    "name": "wasla",
-    "slug": "gp-mobile",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/images/appicon2.png",
-    "scheme": "gpmobile",
-    "userInterfaceStyle": "automatic",
-    "ios": {
-      "icon": "./assets/images/appicon2.png"
-    },
-    "android": {
-      "adaptiveIcon": {
-        "backgroundColor": "#FFFFFF",
-        "foregroundImage": "./assets/images/appicon2.png"
-      },
-      "predictiveBackGestureEnabled": false,
-      "package": "com.wasla.app"
-    },
-    "web": {
-      "output": "static",
-      "favicon": "./assets/images/appicon.png",
-      "bundler": "metro"
-    },
-    "plugins": [
-      "expo-router",
-      [
-        "expo-splash-screen",
-        {
-          "backgroundColor": "#ffffff",
-          "image": "./assets/images/waslalogo.png",
-          "dark": {
-            "image": "./assets/images/waslalogo.png",
-            "backgroundColor": "#000000"
-          },
-          "imageWidth": 200
-        }
-      ],
-      [
-        "expo-secure-store",
-        {
-          "configureAndroidBackup": true,
-          "faceIDPermission": "Allow $(PRODUCT_NAME) to access your Face ID biometric data."
-        }
-      ],
-      "expo-font",
-      "expo-web-browser",
-      "expo-localization"
-    ],
-    "experiments": {
-      "typedRoutes": true,
-      "reactCompiler": true
-    },
-    "extra": {
-      "router": {},
-      "eas": {
-        "projectId": "f6b98d5e-522e-4549-b34c-a80047175104"
-      }
-    },
-    "owner": "basel_hamdi"
-  }
+	"expo": {
+		"name": "wasla",
+		"slug": "gp-mobile",
+		"version": "1.0.0",
+		"orientation": "portrait",
+		"icon": "./assets/images/appicon2.png",
+		"scheme": "gpmobile",
+		"userInterfaceStyle": "automatic",
+		"ios": {
+			"icon": "./assets/images/appicon2.png"
+		},
+		"androidStatusBar": {
+			"barStyle": "dark-content",
+			"backgroundColor": "#f6f6f8",
+			"translucent": false
+		},
+		"android": {
+			"adaptiveIcon": {
+				"backgroundColor": "#FFFFFF",
+				"foregroundImage": "./assets/images/appicon2.png"
+			},
+			"predictiveBackGestureEnabled": false,
+			"softwareKeyboardLayoutMode": "resize",
+			"package": "com.wasla.app"
+		},
+		"web": {
+			"output": "static",
+			"favicon": "./assets/images/appicon.png",
+			"bundler": "metro"
+		},
+		"plugins": [
+			"expo-router",
+			[
+				"expo-splash-screen",
+				{
+					"backgroundColor": "#f6f6f8",
+					"image": "./assets/images/waslalogo.png",
+					"dark": {
+						"image": "./assets/images/waslalogo.png",
+						"backgroundColor": "#000000"
+					},
+					"imageWidth": 200
+				}
+			],
+			[
+				"expo-secure-store",
+				{
+					"configureAndroidBackup": true,
+					"faceIDPermission": "Allow $(PRODUCT_NAME) to access your Face ID biometric data."
+				}
+			],
+			"expo-font",
+			"expo-web-browser",
+			"expo-localization"
+		],
+		"experiments": {
+			"typedRoutes": true,
+			"reactCompiler": true
+		},
+		"extra": {
+			"router": {},
+			"eas": {
+				"projectId": "f6b98d5e-522e-4549-b34c-a80047175104"
+			}
+		},
+		"owner": "basel_hamdi"
+	}
 }
