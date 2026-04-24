@@ -29,7 +29,9 @@ export const AuthLayout = ({ children }: { children: React.ReactNode }) => {
 				keyboardShouldPersistTaps="handled"
 				showsVerticalScrollIndicator={false}
 			>
-				<SafeAreaView>{children}</SafeAreaView>
+				<SafeAreaView edges={["left", "right"]}>
+					{children}
+				</SafeAreaView>
 			</ScrollView>
 		</KeyboardAvoidingView>
 	);

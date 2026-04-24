@@ -59,6 +59,7 @@ export const SignupScreen = () => {
 				params: {
 					email: data.email,
 					type: "signup",
+					reason: "verify_email",
 				},
 			});
 		} catch (error) {

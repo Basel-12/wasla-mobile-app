@@ -48,11 +48,12 @@ export default function LoginScreen() {
 				StorageKeys.TOKEN,
 				false,
 			);
-			// if (token) {
-			// 	router.replace("/(app)/(home)" as Href);
-			// } else {
+			if (token) {
+				router.replace("/(app)/(home)" as Href);
+			} else {
 				setIsCheckingToken(false);
-			// }
+				// router.replace("/(auth)/reset-password" as Href);
+			}
 		};
 		checkToken();
 	}, []);
@@ -64,7 +65,7 @@ export default function LoginScreen() {
 			const response = await authService.login(data.email, data.password);
 			Toast.show({
 				type: "success",
-				text1: response.data.message,
+				text1: response.message,
 			});
 			//set the token in the storage
 			await StorageService.setItemSecure(
@@ -81,6 +82,7 @@ export default function LoginScreen() {
 							email: data.email,
 							password: data.password,
 							type: "login",
+							reason: "verify_email",
 						},
 					});
 				Toast.show({
@@ -158,7 +160,7 @@ export default function LoginScreen() {
 							<TouchableOpacity
 								onPress={() =>
 									router.push(
-										"/(auth)/forget-Password" as Href,
+										"/(auth)/forget-password" as Href,
 									)
 								}
 							>

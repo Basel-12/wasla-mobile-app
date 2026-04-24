@@ -8,7 +8,7 @@ export const authService = {
 			});
 			return response.data;
 		} catch (error) {
-			console.log(error)
+			console.log(error);
 			throw error;
 		}
 	},
@@ -30,10 +30,34 @@ export const authService = {
 		return response.data;
 	},
 
-	resendOtp: async (email: string) => {
+	resendOtp: async (email: string, reason: string) => {
 		const response = await api.post("/api/v1/auth/resend-otp", {
+			email,
+			reason,
+		});
+		return response.data;
+	},
+
+	forgetPassword: async (email: string) => {
+		const response = await api.post("/api/v1/auth/forgot-password", {
 			email,
 		});
 		return response.data;
-	}
+	},
+
+	verifyForgetPasswordOtp: async (email: string, otp: string) => {
+		const response = await api.post("/api/v1/auth/verify-reset-otp", {
+			email,
+			otp,
+		});
+		return response.data;
+	},
+
+	resetPassword: async (reset_token: string, password: string) => {
+		const response = await api.post("/api/v1/auth/reset-password", {
+			reset_token,
+			password,
+		});
+		return response.data;
+	},
 };
