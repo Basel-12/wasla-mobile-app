@@ -1,26 +1,32 @@
 {
 	"expo": {
 		"name": "wasla",
-		"slug": "wasla",
+		"slug": "gp-mobile",
 		"version": "1.0.0",
-		"package": "com.wasla.app",
 		"orientation": "portrait",
-		"icon": "./assets/images/waslalogo.png",
+		"icon": "./assets/images/appicon2.png",
 		"scheme": "gpmobile",
 		"userInterfaceStyle": "automatic",
 		"ios": {
-			"icon": "./assets/images/waslalogo.png"
+			"icon": "./assets/images/appicon2.png"
+		},
+		"androidStatusBar": {
+			"barStyle": "dark-content",
+			"backgroundColor": "#f6f6f8",
+			"translucent": false
 		},
 		"android": {
 			"adaptiveIcon": {
-				"backgroundColor": "#E6F4FE",
-				"foregroundImage": "./assets/images/waslalogo.png"
+				"backgroundColor": "#FFFFFF",
+				"foregroundImage": "./assets/images/appicon2.png"
 			},
-			"predictiveBackGestureEnabled": false
+			"predictiveBackGestureEnabled": false,
+			"softwareKeyboardLayoutMode": "resize",
+			"package": "com.wasla.app"
 		},
 		"web": {
 			"output": "static",
-			"favicon": "./assets/images/waslalogo.png",
+			"favicon": "./assets/images/appicon.png",
 			"bundler": "metro"
 		},
 		"plugins": [
@@ -28,7 +34,7 @@
 			[
 				"expo-splash-screen",
 				{
-					"backgroundColor": "#ffffff",
+					"backgroundColor": "#f6f6f8",
 					"image": "./assets/images/waslalogo.png",
 					"dark": {
 						"image": "./assets/images/waslalogo.png",
@@ -45,7 +51,8 @@
 				}
 			],
 			"expo-font",
-			"expo-web-browser"
+			"expo-web-browser",
+			"expo-localization"
 		],
 		"experiments": {
 			"typedRoutes": true,
@@ -56,6 +63,7 @@
 			"eas": {
 				"projectId": "f6b98d5e-522e-4549-b34c-a80047175104"
 			}
-		}
+		},
+		"owner": "basel_hamdi"
 	}
 }

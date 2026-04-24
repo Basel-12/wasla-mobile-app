@@ -22,7 +22,9 @@
             "title": "Welcome Back",
             "subtitle": "Sign in to your account to continue",
             "email": "Email",
+            "emailPlaceholder": "Enter your email",
             "password": "Password",
+            "passwordPlaceholder": "********",
             "forgotPassword": "Forgot Password?",
             "signIn": "Log In",
             "signUp": "Sign Up",
@@ -39,6 +41,14 @@
             "signUp": "Sign Up",
             "signIn": "Log In",
             "haveAccount": "Already have an account?"
+        },
+        "forgetPassword": {
+            "title": "Forgot Password?",
+            "subtitle": "Enter your email to reset your password",
+            "email": "Email",
+            "emailPlaceholder": "Enter your email",
+            "sendCode": "Send Code",
+            "backToLogin": "Back to Login"
         },
         "verify": {
             "title": "Check Your Email",

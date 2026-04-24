@@ -13,6 +13,8 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { OnboardingSlide } from "../components/OnboardingSlide";
 import { useSlides } from "../data/onboarding.data";
+import { StorageService } from "@/services/storage.service";
+import { StorageKeys } from "@/utils/constants";
 const { width } = Dimensions.get("window");
 export const OnboardingScreen = () => {
 	const { t } = useTranslation();
@@ -35,7 +37,7 @@ export const OnboardingScreen = () => {
 	}).current;
 
 	const completeOnboarding = async () => {
-		// await StorageService.setItem(StorageKeys.ONBOARDING_COMPLETED, "true");
+		await StorageService.setItem(StorageKeys.ONBOARDING_COMPLETED, "true");
 		router.replace("/(auth)/login" as Href);
 	};
 

@@ -24,5 +24,12 @@ export const signupSchema = (t: TFunction) =>
 			path: ["confirmPassword"],
 		});
 
+export const emailSchema = (t: TFunction) =>
+	z.object({
+		email: z.email(t("auth.validation.login.email.invalid")),
+	});
+
+
 export type LoginForm = z.infer<ReturnType<typeof loginSchema>>;
 export type SignupForm = z.infer<ReturnType<typeof signupSchema>>;
+export type EmailForm = z.infer<ReturnType<typeof emailSchema>>;
