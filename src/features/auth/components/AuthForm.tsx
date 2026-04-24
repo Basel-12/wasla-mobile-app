@@ -26,7 +26,7 @@ export const AuthForm = ({
 			{/* Header */}
 			<View className="">
 				<Text
-					className={`text-5xl font-bold text-gray-900 w-2/3 ${titleClassName}`}
+					className={`text-5xl font-bold text-gray-900 w-2/3 ${titleClassName ?? ""}`}
 				>
 					{title}
 				</Text>

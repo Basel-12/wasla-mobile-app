@@ -8,6 +8,7 @@ export default function _layout() {
 			<Stack.Screen name="signup" />
 			<Stack.Screen name="verify" />
 			<Stack.Screen name="forget-password" />
+			<Stack.Screen name="reset-password" />
 		</Stack>
 	);
 }

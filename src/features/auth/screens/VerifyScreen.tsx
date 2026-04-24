@@ -17,7 +17,7 @@ export default function VerifyScreen() {
 	const OPTLENGTH = 6;
 	const [secondsLeft, setSecondsLeft] = useState(TIMERSECONDS);
 	const [canResend, setCanResend] = useState(false);
-	const { type, email, password } = useLocalSearchParams();
+	const { type, email, password , reason } = useLocalSearchParams();
 	const [isLoading, setIsLoading] = useState(false);
 	const [code, setCode] = useState<string[]>(Array(OPTLENGTH).fill(""));
 	const inputRefs = useRef<Array<TextInput | null>>([]);
@@ -25,10 +25,29 @@ export default function VerifyScreen() {
 	const handleVerify = async () => {
 		try {
 			setIsLoading(true);
-			const response = await authService.verify(
-				email as string,
-				code.join(""),
-			);
+			let response;
+			if (type === "reset-password") {
+				response = await authService.verifyForgetPasswordOtp(
+					email as string,
+					code.join(""),
+				);
+				Toast.show({
+					type: "success",
+					text1: response.message,
+				});
+				router.replace({
+					pathname: "/(auth)/reset-password",
+					params: {
+						email: email as string,
+						reset_token: response.data,
+					},
+				});
+			} else {
+				response = await authService.verify(
+					email as string,
+					code.join(""),
+				);
+			}
 			if (type === "signup") {
 				Toast.show({
 					type: "success",
@@ -68,7 +87,7 @@ export default function VerifyScreen() {
 
 	const handleResendOtp = async () => {
 		try {
-			const response = await authService.resendOtp(email as string);
+			const response = await authService.resendOtp(email as string, reason as string);
 			Toast.show({
 				type: "success",
 				text1: response.message,
@@ -103,9 +122,14 @@ export default function VerifyScreen() {
 	) => {
 		if (e.nativeEvent.key === "Backspace") {
 			if (index > 0) {
-				inputRefs.current[index - 1]?.focus();
 				const newCode = [...code];
-				newCode[index] = "";
+				const isIndexEmpty = newCode[index] === "";
+				isIndexEmpty
+					? (newCode[index] = "")
+					: (newCode[index - 1] = "");
+				isIndexEmpty
+					? inputRefs.current[index - 1]?.focus()
+					: inputRefs.current[index]?.focus();
 				setCode(newCode);
 			} else {
 				inputRefs.current[0]?.focus();
@@ -150,7 +174,11 @@ export default function VerifyScreen() {
 				</View>
 
 				{/* code inputs */}
-				<View className="flex-row items-center justify-around gap-2">
+				<View className="flex-row items-center justify-around gap-2"
+				style={{
+					direction: "ltr"
+				}}
+				>
 					{Array.from({ length: 6 }).map((e, ind) => {
 						return (
 							<TextInput
@@ -169,6 +197,9 @@ export default function VerifyScreen() {
 								onKeyPress={(e) => handleKeyPress(e, ind)}
 								ref={(r) => {
 									inputRefs.current[ind] = r;
+								}}
+								style={{
+									writingDirection: "ltr"
 								}}
 								className="w-12 h-16 rounded-2xl bg-gray-300 text-center text-2xl font-bold border border-gray-300 focus:border-secondary"
 							/>

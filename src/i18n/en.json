@@ -1,87 +1,111 @@
 {
-    "onboarding": {
-        "slide1": {
-            "title": "Communicate Without Barriers",
-            "description": "Bridging sign language and spoken words in real-time with AI.",
-            "buttonText": "Next"
-        },
-        "slide2": {
-            "title": "Translate Signs Instantly",
-            "description": "Point your camera at any hand sign Communication made effortless.",
-            "buttonText": "Continue"
-        },
-        "slide3": {
-            "title": "Connect With the Community",
-            "description": "Join a vibrant community where you can share experiences, learn together, and build lasting connections.",
-            "buttonText": "Get Started"
-        },
-        "skip": "Skip"
-    },
-    "auth": {
-        "login": {
-            "title": "Welcome Back",
-            "subtitle": "Sign in to your account to continue",
-            "email": "Email",
-            "emailPlaceholder": "Enter your email",
-            "password": "Password",
-            "passwordPlaceholder": "********",
-            "forgotPassword": "Forgot Password?",
-            "signIn": "Log In",
-            "signUp": "Sign Up",
-            "noAccount": "Don't have an account?"
-        },
-        "signup": {
-            "title": "Create an Account",
-            "subtitle": "Sign up to get started",
-            "name": "Name",
-            "email": "Email",
-            "password": "Password",
-            "confirmPassword": "Confirm Password",
-            "phone": "Phone Number",
-            "signUp": "Sign Up",
-            "signIn": "Log In",
-            "haveAccount": "Already have an account?"
-        },
-        "forgetPassword": {
-            "title": "Forgot Password?",
-            "subtitle": "Enter your email to reset your password",
-            "email": "Email",
-            "emailPlaceholder": "Enter your email",
-            "sendCode": "Send Code",
-            "backToLogin": "Back to Login"
-        },
-        "verify": {
-            "title": "Check Your Email",
-            "subtitle": "We've sent a verification code to your email",
-            "verify": "Verify",
-            "resend": "Resend Code",
-            "didntReceive": "Didn't receive the code?",
-            "resendIn": "Can Resend in"
-        },
-        "validation": {
-            "login": {
-                "email": {
-                    "invalid": "Please enter a valid email address"
-                },
-                "password": {
-                    "min": "Password must be at least 8 characters long"
-                }
-            },
-            "signup": {
-                "name": {
-                    "required": "Please enter your name"
-                },
-                "email": {
-                    "invalid": "Please enter a valid email address"
-                },
-                "password": {
-                    "min": "Password must be at least 8 characters long"
-                },
-                "confirmPassword": {
-                    "min": "Confirm password must be at least 8 characters long",
-                    "match": "Confirm password does not match the password"
-                }
-            }
-        }
-    }
+	"onboarding": {
+		"slide1": {
+			"title": "Communicate Without Barriers",
+			"description": "Bridging sign language and spoken words in real-time with AI.",
+			"buttonText": "Next"
+		},
+		"slide2": {
+			"title": "Translate Signs Instantly",
+			"description": "Point your camera at any hand sign Communication made effortless.",
+			"buttonText": "Continue"
+		},
+		"slide3": {
+			"title": "Connect With the Community",
+			"description": "Join a vibrant community where you can share experiences, learn together, and build lasting connections.",
+			"buttonText": "Get Started"
+		},
+		"skip": "Skip"
+	},
+	"auth": {
+		"login": {
+			"title": "Welcome Back",
+			"subtitle": "Sign in to your account to continue",
+			"email": "Email",
+			"emailPlaceholder": "Enter your email",
+			"password": "Password",
+			"passwordPlaceholder": "********",
+			"forgotPassword": "Forgot Password?",
+			"signIn": "Log In",
+			"signUp": "Sign Up",
+			"noAccount": "Don't have an account?"
+		},
+		"signup": {
+			"title": "Create an Account",
+			"subtitle": "Sign up to get started",
+			"name": "Name",
+			"email": "Email",
+			"password": "Password",
+			"confirmPassword": "Confirm Password",
+			"phone": "Phone Number",
+			"signUp": "Sign Up",
+			"signIn": "Log In",
+			"haveAccount": "Already have an account?"
+		},
+		"forgetPassword": {
+			"title": "Forgot Password?",
+			"subtitle": "Enter your email to reset your password",
+			"email": "Email",
+			"emailPlaceholder": "Enter your email",
+			"sendCode": "Send Code",
+			"backToLogin": "Back to Login"
+		},
+		"verify": {
+			"title": "Check Your Email",
+			"subtitle": "We've sent a verification code to your email",
+			"verify": "Verify",
+			"resend": "Resend Code",
+			"didntReceive": "Didn't receive the code?",
+			"resendIn": "Can Resend in"
+		},
+		"validation": {
+			"login": {
+				"email": {
+					"invalid": "Please enter a valid email address"
+				},
+				"password": {
+					"min": "Password must be at least 8 characters long"
+				}
+			},
+			"signup": {
+				"name": {
+					"required": "Please enter your name"
+				},
+				"email": {
+					"invalid": "Please enter a valid email address"
+				},
+				"password": {
+					"min": "Password must be at least 8 characters long"
+				},
+				"confirmPassword": {
+					"min": "Confirm password must be at least 8 characters long",
+					"match": "Confirm password does not match the password"
+				}
+			},
+			"resetPassword": {
+				"newPassword": {
+					"min": "New password must be at least 8 characters long"
+				},
+				"confirmNewPassword": {
+					"min": "Confirm new password must be at least 8 characters long",
+					"match": "Confirm new password does not match the new password"
+				}
+			}
+		},
+		"resetPassword": {
+			"title": "Reset Password",
+			"subtitle": "Enter your new password",
+			"newPassword": "New Password",
+			"newPasswordPlaceholder": "Enter your new password",
+			"confirmNewPassword": "Confirm New Password",
+			"confirmNewPasswordPlaceholder": "********",
+			"resetPassword": "Reset Password"
+		}
+	},
+	"notFound": {
+		"title": "Something went wrong",
+		"description": "We couldn't find the page you were looking for.",
+		"buttonText": "Go to Home"
+	}
+
 }

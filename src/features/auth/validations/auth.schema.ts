@@ -29,7 +29,16 @@ export const emailSchema = (t: TFunction) =>
 		email: z.email(t("auth.validation.login.email.invalid")),
 	});
 
+export const resetPasswordSchema = (t: TFunction) =>
+	z.object({
+		newPassword: z.string().min(8, t("auth.validation.resetPassword.newPassword.min")),
+		confirmNewPassword: z.string().min(8, t("auth.validation.resetPassword.confirmNewPassword.match")),
+	}).refine((data) => data.newPassword === data.confirmNewPassword, {
+		message: t("auth.validation.resetPassword.confirmNewPassword.match"),
+		path: ["confirmNewPassword"],
+	});
 
 export type LoginForm = z.infer<ReturnType<typeof loginSchema>>;
 export type SignupForm = z.infer<ReturnType<typeof signupSchema>>;
 export type EmailForm = z.infer<ReturnType<typeof emailSchema>>;
+export type ResetPasswordForm = z.infer<ReturnType<typeof resetPasswordSchema>>;
