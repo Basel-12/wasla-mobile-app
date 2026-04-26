@@ -106,6 +106,30 @@
 		"title": "Something went wrong",
 		"description": "We couldn't find the page you were looking for.",
 		"buttonText": "Go to Home"
+	},
+	"tabs": {
+		"home": "Home",
+		"scan": "camera",
+		"profile": "Profile"
+	},
+	"home": {
+		"header": {
+			"welcome": "Welcome back"
+		},
+		"quickActions": {
+			"title": "Quick Actions",
+			"viewAll": "View All",
+			"camera": "Camera",
+			"cameraDescription": "Scan any sign to get started",
+			"favorites": "Favorites",
+			"favoritesDescription": "View your favorite signs",
+			"settings": "Settings",
+			"settingsDescription": "Change your language"
+		},
+		"notifications": {
+			"title": "Notifications",
+			"viewAll": "View All"
+		}
 	}
 
 }
