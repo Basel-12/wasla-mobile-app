@@ -106,5 +106,29 @@
 		"title": "هناك خطأ ما",
 		"description": "لم نتمكن من العثور على الصفحة التي تبحث عنها.",
 		"buttonText": "العودة إلى الرئيسية"
+	},
+	"tabs": {
+		"home": "الرئيسية",
+		"scan": "الكاميرا",
+		"profile": "الحساب"
+	},
+	"home": {
+		"header": {
+			"welcome": "مرحبا بعودتك"
+		},
+		"quickActions": {
+			"title": "الإجراءات السريعة",
+			"viewAll": "عرض الكل",
+			"camera": "الكاميرا",
+			"cameraDescription": "قم بمسح أي إشارة للبدء",
+			"favorites": "المفضلة",
+			"favoritesDescription": "عرض الإشارات المفضلة",
+			"settings": "الإعدادات",
+			"settingsDescription": "تغيير اللغة"
+		},
+		"notifications": {
+			"title": "الإشعارات",
+			"viewAll": "عرض الكل"
+		}
 	}
 }

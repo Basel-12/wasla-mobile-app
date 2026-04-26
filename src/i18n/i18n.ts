@@ -37,6 +37,8 @@ i18n.use(initReactI18next).init({
 export const initializeLanguage = async () => {
     const language = await StorageService.getItem(StorageKeys.Language, false);
 
+    // const language = 'ar';
+
     if(language){
         i18n.changeLanguage(language);
         return language;
