@@ -4,27 +4,33 @@ import {
 	useSafeAreaInsets,
 } from "react-native-safe-area-context";
 import Header from "../components/Header";
-import QuickActions from "../components/QuickActions";
 import Notifications from "../components/Notifications";
+import QuickActions from "../components/QuickActions";
 
 export default function HomeScreen() {
 	const insets = useSafeAreaInsets();
 	return (
-		<SafeAreaView className="flex-1 bg-bgGrey">
-			<ScrollView
-				contentContainerStyle={{
-					flexGrow: 1,
-					paddingBottom: insets.bottom + 32,
-					// paddingTop: insets.top,
-				}}
+		<View className="flex-1">
+			<SafeAreaView edges={["top"]} className="bg-bgGrey flex-0" />
+			<SafeAreaView
+				className="flex-1 bg-white"
+				edges={["left", "right", "bottom"]}
 			>
-				<Header />
-				<View className="bg-white flex-1 p-6 gap-4">
-					<QuickActions />
-					{/* stats cards section  */}
-					<Notifications />
-				</View>
-			</ScrollView>
-		</SafeAreaView>
+				<ScrollView
+					contentContainerStyle={{
+						flexGrow: 1,
+						paddingBottom: insets.bottom + 32,
+						// paddingTop: insets.top,
+					}}
+				>
+					<Header />
+					<View className="bg-white flex-1 p-6 gap-4">
+						<QuickActions />
+						{/* stats cards section  */}
+						<Notifications />
+					</View>
+				</ScrollView>
+			</SafeAreaView>
+		</View>
 	);
 }

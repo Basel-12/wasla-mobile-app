@@ -5,7 +5,7 @@ import { Text, View } from "react-native";
 export default function Header() {
 	const { t } = useTranslation();
 	return (
-		<View className="bg-bgGrey p-4 rounded-2xl flex-row items-center justify-between">
+		<View className="bg-bgGrey p-4 rounded-b-3xl flex-row items-center justify-between">
 			{/* profile image */}
 			<View className=" flex-row items-center gap-2">
 				{/* image */}
