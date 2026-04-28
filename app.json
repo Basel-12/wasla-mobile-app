@@ -8,7 +8,9 @@
 		"scheme": "gpmobile",
 		"userInterfaceStyle": "automatic",
 		"ios": {
-			"icon": "./assets/images/appicon2.png"
+			"icon": "./assets/images/appicon2.png",
+			"googleServicesFile": "./GoogleService-Info.plist",
+			"bundleIdentifier": "com.wasla.app"
 		},
 		"androidStatusBar": {
 			"barStyle": "dark-content",
@@ -20,6 +22,7 @@
 				"backgroundColor": "#FFFFFF",
 				"foregroundImage": "./assets/images/appicon2.png"
 			},
+			"googleServicesFile": "./google-services.json",
 			"predictiveBackGestureEnabled": false,
 			"softwareKeyboardLayoutMode": "resize",
 			"package": "com.wasla.app"
