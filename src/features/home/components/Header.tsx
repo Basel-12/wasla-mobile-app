@@ -1,6 +1,7 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Text, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 
 export default function Header() {
 	const { t } = useTranslation();
@@ -24,11 +25,15 @@ export default function Header() {
 
 			{/* notification icon */}
 			<View>
-				<Ionicons
-					name="notifications-outline"
-					size={24}
-					color="black"
-				/>
+				<TouchableOpacity
+					onPress={() => router.push("/notifications")}
+				>
+					<Ionicons
+						name="notifications-outline"
+						size={24}
+						color="black"
+					/>
+				</TouchableOpacity>
 			</View>
 		</View>
 	);

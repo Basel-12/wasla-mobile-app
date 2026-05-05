@@ -128,8 +128,24 @@
 		},
 		"notifications": {
 			"title": "Notifications",
-			"viewAll": "View All"
+			"viewAll": "View All",
+			"noNotifications": "No notifications"
 		}
+	},
+	"profile": {
+		"title": "Profile",
+		"name": "Name",
+		"email": "Email",
+		"phone": "Phone",
+		"language": "en ",
+		"theme": "Theme",
+		"logout": "Log out",
+		"changePhoto": "Change Photo",
+		"takePhoto": "Take Photo",
+		"chooseFromGallery": "Choose from Gallery",
+		"cancel": "Cancel"
+	},
+	"camera": {
+		"scan": "Scan"
 	}
-
 }

@@ -1,7 +1,9 @@
 import CustomButton from "@/components/CustomButton";
 import i18n from "@/i18n/i18n";
+import { deviceRegisterService } from "@/services/device-register.service";
 import { StorageService } from "@/services/storage.service";
 import { StorageKeys } from "@/utils/constants";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosError } from "axios";
 import { Href, router } from "expo-router";
@@ -20,7 +22,6 @@ import { AuthForm } from "../components/AuthForm";
 import { AuthLayout } from "../components/AuthLayout";
 import { authService } from "../services/auth.service";
 import { LoginForm, loginSchema } from "../validations/auth.schema";
-import Ionicons from "@expo/vector-icons/Ionicons";
 
 export default function LoginScreen() {
 	const { t } = useTranslation();
@@ -49,10 +50,10 @@ export default function LoginScreen() {
 				false,
 			);
 			if (token) {
+				await deviceRegisterService.registerDevice(false);
 				router.replace("/(app)/(home)" as Href);
 			} else {
 				setIsCheckingToken(false);
-				// router.replace("/(auth)/reset-password" as Href);
 			}
 		};
 		checkToken();
@@ -72,11 +73,12 @@ export default function LoginScreen() {
 				StorageKeys.TOKEN,
 				response.data,
 			);
+			await deviceRegisterService.registerDevice(true);
 			router.push("/(app)/(home)" as Href);
 		} catch (error) {
 			if (error instanceof AxiosError) {
-				if (error.response?.status === 403)
-					router.push({
+				if (error.response?.status === 403) {
+					router.replace({
 						pathname: "/(auth)/verify",
 						params: {
 							email: data.email,
@@ -85,12 +87,14 @@ export default function LoginScreen() {
 							reason: "verify_email",
 						},
 					});
-				Toast.show({
-					type: "error",
-					text1:
-						error.response?.data.message ||
-						"An unknown error occurred",
-				});
+				} else {
+					Toast.show({
+						type: "error",
+						text1:
+							error.response?.data.message ||
+							"An unknown error occurred",
+					});
+				}
 			}
 		} finally {
 			setIsLoading(false);
@@ -216,14 +220,24 @@ export default function LoginScreen() {
 										value={value}
 									/>
 									<TouchableOpacity
-										onPress={() => setShowPassword(!showPassword)}
+										onPress={() =>
+											setShowPassword(!showPassword)
+										}
 										className="absolute right-4 top-1/2 -translate-y-1/2"
 										activeOpacity={0.8}
-										accessibilityLabel={showPassword ? "Hide password" : "Show password"}
+										accessibilityLabel={
+											showPassword
+												? "Hide password"
+												: "Show password"
+										}
 										accessibilityRole="button"
 									>
-										<Ionicons 
-											name={showPassword ? "eye-off-outline" : "eye-outline"}
+										<Ionicons
+											name={
+												showPassword
+													? "eye-off-outline"
+													: "eye-outline"
+											}
 											size={22}
 											color="#63677E"
 										/>

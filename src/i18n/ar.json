@@ -128,7 +128,24 @@
 		},
 		"notifications": {
 			"title": "الإشعارات",
-			"viewAll": "عرض الكل"
+			"viewAll": "عرض الكل",
+			"noNotifications": "لا يوجد إشعارات"
 		}
+	},
+	"profile": {
+		"title": "الحساب",
+		"name": "الاسم",
+		"email": "البريد الإلكتروني",
+		"phone": "رقم الهاتف",
+		"language": "اللغة",
+		"theme": "السمة",
+		"logout": "تسجيل الخروج",
+		"changePhoto": "تغيير الصورة الشخصية",
+		"takePhoto": "التقط صورة",
+		"chooseFromGallery": "اختر من المعرض",
+		"cancel": "إلغاء"
+	},
+	"camera": {
+		"scan": "الكاميرا"
 	}
 }

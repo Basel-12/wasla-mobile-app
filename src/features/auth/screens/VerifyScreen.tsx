@@ -10,6 +10,7 @@ import Toast from "react-native-toast-message";
 import { StorageService } from "../../../services/storage.service";
 import { AuthLayout } from "../components/AuthLayout";
 import { authService } from "../services/auth.service";
+import { deviceRegisterService } from "@/services/device-register.service";
 
 export default function VerifyScreen() {
 	const { t } = useTranslation();
@@ -69,6 +70,7 @@ export default function VerifyScreen() {
 					StorageKeys.TOKEN,
 					response.data,
 				);
+				await deviceRegisterService.registerDevice(true);
 				router.replace("/(app)/(home)" as Href);
 			}
 		} catch (error) {

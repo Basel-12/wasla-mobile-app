@@ -1,7 +1,5 @@
-import { Text, View } from "react-native";
+import ScanScreen from "@/features/camera/screens/ScanScreen";
 
-export default function ScanScreen() {
-	return <View>
-		<Text>Scan</Text>
-	</View>
+export default function Index() {
+	return <ScanScreen />;
 }

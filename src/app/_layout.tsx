@@ -1,5 +1,6 @@
 import "@/i18n/i18n";
 import { initializeLanguage } from "@/i18n/i18n";
+import { useNotificationListeners } from "@/services/notifications.listener";
 import { StorageService } from "@/services/storage.service";
 import { StorageKeys } from "@/utils/constants";
 import {
@@ -11,6 +12,7 @@ import {
 import { Href, router, SplashScreen, Stack } from "expo-router";
 import { useEffect, useState } from "react";
 import { StatusBar, Text, View } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import "../../global.css";
@@ -26,6 +28,10 @@ export default function RootLayout() {
 		Cairo_600SemiBold,
 		Cairo_700Bold,
 	});
+
+	//listen to notifications
+	useNotificationListeners();
+
 	useEffect(() => {
 		if (!fontsLoaded && !fontError) return;
 		const init = async () => {
@@ -107,19 +113,24 @@ export default function RootLayout() {
 	return (
 		<>
 			<SafeAreaProvider>
-				<StatusBar
-					backgroundColor="#f6f6f8"
-					barStyle="dark-content"
-					translucent={false}
-				/>
-				<View style={{ flex: 1, backgroundColor: "#f6f6f8" }}>
-					<Stack screenOptions={{ headerShown: false }}>
-						<Stack.Screen name="(onboarding)" />
-						<Stack.Screen name="(auth)" />
-						<Stack.Screen name="(app)" />
-						<Stack.Screen name="+not-found" />
-					</Stack>
-				</View>
+				<GestureHandlerRootView
+					style={{ flex: 1, backgroundColor: "#f6f6f8" }}
+				>
+					<StatusBar
+						backgroundColor="#f6f6f8"
+						barStyle="dark-content"
+						translucent={false}
+					/>
+					<View style={{ flex: 1, backgroundColor: "#f6f6f8" }}>
+						<Stack screenOptions={{ headerShown: false }}>
+							<Stack.Screen name="(onboarding)" />
+							<Stack.Screen name="(auth)" />
+							<Stack.Screen name="(app)" />
+							<Stack.Screen name="notifications" />
+							<Stack.Screen name="+not-found" />
+						</Stack>
+					</View>
+				</GestureHandlerRootView>
 				<Toast
 					config={toastConfig}
 					position="bottom"

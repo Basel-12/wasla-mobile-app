@@ -40,13 +40,13 @@ export default function FloatingTabBar({
 						const icons: Record<string, any> = {
 							"(home)": "home",
 							"(scan)/index": "scan",
-							"(profile)/index": "person",
+							"(profile)": "person",
 						};
 
 						const labels: Record<string, string> = {
 							"(home)": t("tabs.home"),
 							"(scan)/index": t("tabs.scan"),
-							"(profile)/index": t("tabs.profile"),
+							"(profile)": t("tabs.profile"),
 						};
 
 						const label = labels[route.name];

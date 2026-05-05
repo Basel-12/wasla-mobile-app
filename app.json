@@ -25,6 +25,7 @@
 			"googleServicesFile": "./google-services.json",
 			"predictiveBackGestureEnabled": false,
 			"softwareKeyboardLayoutMode": "resize",
+			"permissions": ["android.permission.CAMERA"],
 			"package": "com.wasla.app"
 		},
 		"web": {
@@ -55,7 +56,28 @@
 			],
 			"expo-font",
 			"expo-web-browser",
-			"expo-localization"
+			"expo-localization",
+			[
+				"expo-notifications",
+				{
+					"icon": "./assets/images/appicon2.png",
+					"color": "#ffffff",
+					"androidMode": "default",
+					"androidCollapsedTitle": "Wasla",
+					"androidSeparatorTitle": "|",
+					"ios": {
+						"present": "notification",
+						"announce": true
+					}
+				}
+			],
+			[
+				"expo-image-picker",
+				{
+					"photosPermission": "Allow Wasla to access your photos",
+					"cameraPermission": "Allow Wasla to use your camera"
+				}
+			]
 		],
 		"experiments": {
 			"typedRoutes": true,
