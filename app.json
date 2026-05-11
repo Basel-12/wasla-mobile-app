@@ -22,6 +22,8 @@
 				"backgroundColor": "#FFFFFF",
 				"foregroundImage": "./assets/images/appicon2.png"
 			},
+			"jsEngine": "hermes",
+			
 			"googleServicesFile": "./google-services.json",
 			"predictiveBackGestureEnabled": false,
 			"softwareKeyboardLayoutMode": "resize",
@@ -75,6 +77,12 @@
 				"expo-image-picker",
 				{
 					"photosPermission": "Allow Wasla to access your photos",
+					"cameraPermission": "Allow Wasla to use your camera"
+				}
+			],
+			[
+				"expo-camera",
+				{
 					"cameraPermission": "Allow Wasla to use your camera"
 				}
 			]

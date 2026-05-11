@@ -12,10 +12,16 @@ export const notificationsService = {
 		}
 	},
 
-	getUserNotifications: async () => {
+	getUserNotifications: async (page: number = 1, limit: number = 10) => {
 		try {
 			const response = await api.get(
 				"/api/v1/notifications/get-user-notifications",
+				{
+					params: {
+						page,
+						limit,
+					}
+				}
 			);
 			// console.log(response.data);
 			return response.data;

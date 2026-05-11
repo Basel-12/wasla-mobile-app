@@ -1,337 +1,467 @@
-import CustomButton from "@/components/CustomButton";
-import i18n from "@/i18n/i18n";
-import Ionicons from "@expo/vector-icons/Ionicons";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { AxiosError } from "axios";
-import { Href, router } from "expo-router";
-import React, { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
-import { useTranslation } from "react-i18next";
+import CustomButton from '@/components/CustomButton';
+import i18n from '@/i18n/i18n';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { AxiosError } from 'axios';
+import { Href, router } from 'expo-router';
+import React, { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import {
-	Keyboard,
-	Text,
-	TextInput,
-	TouchableOpacity,
-	View,
-} from "react-native";
-import Toast from "react-native-toast-message";
-import { AuthForm } from "../components/AuthForm";
-import { AuthLayout } from "../components/AuthLayout";
-import { authService } from "../services/auth.service";
-import { SignupForm, signupSchema } from "../validations/auth.schema";
+    Keyboard,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
+} from 'react-native';
+import Toast from 'react-native-toast-message';
+import { AuthForm } from '../components/AuthForm';
+import { AuthLayout } from '../components/AuthLayout';
+import { authService } from '../services/auth.service';
+import { SignupForm, signupSchema } from '../validations/auth.schema';
 
 export const SignupScreen = () => {
-	const { t } = useTranslation();
-	const {
-		control,
-		handleSubmit,
-		formState: { errors },
-	} = useForm<SignupForm>({
-		resolver: zodResolver(signupSchema(t)),
-		mode: "onTouched",
-		defaultValues: {
-			name: "",
-			email: "",
-			password: "",
-			confirmPassword: "",
-		},
-	});
-	const [isLoading, setIsLoading] = useState(false);
-	const [showPassword, setShowPassword] = useState(false);
-	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const { t } = useTranslation();
+    const {
+        control,
+        handleSubmit,
+        formState: { errors },
+    } = useForm<SignupForm>({
+        resolver: zodResolver(signupSchema(t)),
+        mode: 'all',
+        defaultValues: {
+            name: '',
+            email: '',
+            password: '',
+            confirmPassword: '',
+        },
+    });
+    const [isLoading, setIsLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [isFocusedName, setIsFocusedName] = useState(false);
+    const [isFocusedEmail, setIsFocusedEmail] = useState(false);
+    const [isFocusedPassword, setIsFocusedPassword] = useState(false);
+    const [isFocusedConfirmPassword, setIsFocusedConfirmPassword] =
+        useState(false);
+    const onSubmit = async (data: SignupForm) => {
+        try {
+            Keyboard.dismiss();
+            setIsLoading(true);
+            const response = await authService.signup(
+                data.name,
+                data.email,
+                data.password,
+                i18n.language,
+            );
+            Toast.show({
+                type: 'success',
+                text1: response.message,
+                visibilityTime: 2000,
+            });
+            router.replace({
+                pathname: '/(auth)/verify',
+                params: {
+                    email: data.email,
+                    type: 'signup',
+                    reason: 'verify_email',
+                },
+            });
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                Toast.show({
+                    type: 'error',
+                    text1:
+                        error.response?.data.message ||
+                        'An unknown error occurred',
+                    visibilityTime: 2000,
+                });
+            }
+        } finally {
+            setIsLoading(false);
+        }
+    };
+    return (
+        <AuthLayout>
+            <AuthForm
+                title={t('auth.signup.title')}
+                subtitle={t('auth.signup.subtitle')}
+                imageSource={require('../../../../assets/images/signup.png')}
+            >
+                <View className="gap-6">
+                    {/* Name */}
+                    <View>
+                        <Text className="text-black mb-2 text-md">
+                            {t('auth.signup.name')}
+                        </Text>
+                        <Controller
+                            control={control}
+                            name="name"
+                            render={({
+                                field: { onChange, onBlur, value },
+                            }) => (
+                                <View
+                                    className={`relative flex-row items-center gap-2 p-2
+										bg-white/50 rounded-2xl  border ${errors.name ? 'border-red-500' : isFocusedName ? 'border-mainBlue' : 'border-gray-200'}`}
+                                >
+                                    {/* icon  */}
+                                    <View
+                                        pointerEvents="none"
+                                        className="w-10 h-10 items-center justify-center rounded-xl bg-bgGrey"
+                                    >
+                                        <Ionicons
+                                            name="person-outline"
+                                            size={22}
+                                            color={
+                                                errors.name ? 'red' : '#5140E8'
+                                            }
+                                        />
+                                    </View>
+                                    <TextInput
+                                        placeholder={t('auth.signup.name')}
+                                        placeholderTextColor={'#63677E'}
+                                        keyboardType="default"
+                                        autoCapitalize="none"
+                                        autoComplete="name"
+                                        textContentType="name"
+                                        accessibilityLabel={t(
+                                            'auth.signup.name',
+                                        )}
+                                        accessibilityRole="text"
+                                        accessibilityState={{ disabled: false }}
+                                        accessibilityValue={{ text: '' }}
+                                        className={`text-black flex-1  `}
+                                        multiline={false}
+                                        onChangeText={onChange}
+                                        onBlur={() => {
+                                            onBlur();
+                                            setIsFocusedName(false);
+                                        }}
+                                        onFocus={() => {
+                                            setIsFocusedName(true);
+                                        }}
+                                        value={value}
+                                    />
+                                </View>
+                            )}
+                        />
+                        {errors.name && (
+                            <Text className="text-red-500 text-sm">
+                                {errors.name.message}
+                            </Text>
+                        )}
+                    </View>
+                    {/* Email */}
+                    <View>
+                        <Text className="text-black mb-2 text-md">
+                            {t('auth.signup.email')}
+                        </Text>
+                        <Controller
+                            control={control}
+                            name="email"
+                            render={({
+                                field: { onChange, onBlur, value },
+                            }) => (
+                                <View
+                                    className={`relative flex-row items-center gap-2 p-2
+                                        bg-white/50 rounded-2xl  border ${errors.email ? 'border-red-500' : isFocusedEmail ? 'border-mainBlue' : 'border-gray-200'}`}
+                                >
+                                    {/* icon  */}
+                                    <View
+                                        pointerEvents="none"
+                                        className="w-10 h-10 items-center justify-center rounded-xl bg-bgGrey"
+                                    >
+                                        <Ionicons
+                                            name="mail-outline"
+                                            size={22}
+                                            color={
+                                                errors.email ? 'red' : '#5140E8'
+                                            }
+                                        />
+                                    </View>
+                                    <TextInput
+                                        placeholder={t('auth.signup.email')}
+                                        placeholderTextColor={'#63677E'}
+                                        keyboardType="email-address"
+                                        autoCapitalize="none"
+                                        autoComplete="email"
+                                        textContentType="emailAddress"
+                                        accessibilityLabel={t(
+                                            'auth.signup.email',
+                                        )}
+                                        accessibilityRole="text"
+                                        accessibilityState={{ disabled: false }}
+                                        accessibilityValue={{ text: '' }}
+                                        className={`text-black flex-1  `}
+                                        multiline={false}
+                                        onChangeText={onChange}
+                                        onBlur={() => {
+                                            onBlur();
+                                            setIsFocusedEmail(false);
+                                        }}
+                                        onFocus={() => {
+                                            setIsFocusedEmail(true);
+                                        }}
+                                        value={value}
+                                    />
+                                </View>
+                            )}
+                        />
+                        {errors.email && (
+                            <Text className="text-red-500 text-sm">
+                                {errors.email.message}
+                            </Text>
+                        )}
+                    </View>
+                    {/* Password */}
+                    <View>
+                        <Text className="text-black mb-2 text-md">
+                            {t('auth.signup.password')}
+                        </Text>
+                        <Controller
+                            control={control}
+                            name="password"
+                            render={({
+                                field: { onChange, onBlur, value },
+                            }) => (
+                                <View
+                                    className={`relative flex-row items-center gap-2 p-2
+                                        bg-white/50 rounded-2xl  border ${errors.password ? 'border-red-500' : isFocusedPassword ? 'border-mainBlue' : 'border-gray-200'}`}
+                                >
+                                    {/* icon  */}
+                                    <View
+                                        pointerEvents="none"
+                                        className="w-10 h-10 items-center justify-center rounded-xl bg-bgGrey"
+                                    >
+                                        <Ionicons
+                                            name="lock-closed-outline"
+                                            size={22}
+                                            color={
+                                                errors.password
+                                                    ? 'red'
+                                                    : '#5140E8'
+                                            }
+                                        />
+                                    </View>
+                                    <View className="relative flex-1">
+                                        <TextInput
+                                            placeholder={t(
+                                                'auth.signup.password',
+                                            )}
+                                            placeholderTextColor={'#63677E'}
+                                            textAlign={
+                                                i18n.language === 'ar'
+                                                    ? 'right'
+                                                    : 'left'
+                                            }
+                                            style={{
+                                                writingDirection:
+                                                    i18n.language === 'ar'
+                                                        ? 'rtl'
+                                                        : 'ltr',
+                                            }}
+                                            keyboardType="default"
+                                            autoCapitalize="none"
+                                            autoComplete="password"
+                                            textContentType="password"
+                                            secureTextEntry={!showPassword}
+                                            accessibilityLabel={t(
+                                                'auth.signup.password',
+                                            )}
+                                            accessibilityRole="text"
+                                            accessibilityState={{
+                                                disabled: false,
+                                            }}
+                                            accessibilityValue={{ text: '' }}
+                                            className={`text-black flex-1  `}
+                                            multiline={false}
+                                            onChangeText={(text) =>
+                                                onChange(
+                                                    text.replace(/\s/g, ''),
+                                                )
+                                            }
+                                            onBlur={() => {
+                                                onBlur();
+                                                setIsFocusedPassword(false);
+                                            }}
+                                            onFocus={() => {
+                                                setIsFocusedPassword(true);
+                                            }}
+                                            value={value}
+                                        />
+                                        <TouchableOpacity
+                                            onPress={() =>
+                                                setShowPassword(!showPassword)
+                                            }
+                                            className="absolute right-4 top-1/2 -translate-y-1/2"
+                                            activeOpacity={0.8}
+                                            accessibilityLabel={
+                                                showPassword
+                                                    ? 'Hide password'
+                                                    : 'Show password'
+                                            }
+                                            accessibilityRole="button"
+                                        >
+                                            <Ionicons
+                                                name={
+                                                    showPassword
+                                                        ? 'eye-off-outline'
+                                                        : 'eye-outline'
+                                                }
+                                                size={22}
+                                                color="#63677E"
+                                            />
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                            )}
+                        />
+                        {errors.password && (
+                            <Text className="text-red-500 text-sm">
+                                {errors.password.message}
+                            </Text>
+                        )}
+                    </View>
+                    {/* Confirm Password */}
+                    <View>
+                        <Text className="text-[#63677E] mb-2 text-md">
+                            {t('auth.signup.confirmPassword')}
+                        </Text>
+                        <Controller
+                            control={control}
+                            name="confirmPassword"
+                            render={({
+                                field: { onChange, onBlur, value },
+                            }) => (
+                                <View
+                                    className={`relative flex-row items-center gap-2 p-2
+                                        bg-white/50 rounded-2xl  border ${errors.confirmPassword ? 'border-red-500' : isFocusedConfirmPassword ? 'border-mainBlue' : 'border-gray-200'}`}
+                                >
+                                    {/* icon  */}
+                                    <View
+                                        pointerEvents="none"
+                                        className="w-10 h-10 items-center justify-center rounded-xl bg-bgGrey"
+                                    >
+                                        <Ionicons
+                                            name="lock-closed-outline"
+                                            size={22}
+                                            color={
+                                                errors.confirmPassword
+                                                    ? 'red'
+                                                    : '#5140E8'
+                                            }
+                                        />
+                                    </View>
+                                    <View className="relative flex-1">
+                                        <TextInput
+                                            placeholder={t(
+                                                'auth.signup.confirmPassword',
+                                            )}
+                                            textAlign={
+                                                i18n.language === 'ar'
+                                                    ? 'right'
+                                                    : 'left'
+                                            }
+                                            style={{
+                                                writingDirection:
+                                                    i18n.language === 'ar'
+                                                        ? 'rtl'
+                                                        : 'ltr',
+                                            }}
+                                            placeholderTextColor={'#63677E'}
+                                            keyboardType="default"
+                                            autoCapitalize="none"
+                                            autoComplete="password"
+                                            textContentType="password"
+                                            secureTextEntry={
+                                                !showConfirmPassword
+                                            }
+                                            accessibilityLabel={t(
+                                                'auth.signup.confirmPassword',
+                                            )}
+                                            accessibilityRole="text"
+                                            accessibilityState={{
+                                                disabled: false,
+                                            }}
+                                            accessibilityValue={{ text: '' }}
+                                            className={`text-black flex-1  `}
+                                            multiline={false}
+                                            onChangeText={(text) =>
+                                                onChange(
+                                                    text.replace(/\s/g, ''),
+                                                )
+                                            }
+                                            onBlur={() => {
+                                                onBlur();
+                                                setIsFocusedConfirmPassword(
+                                                    false,
+                                                );
+                                            }}
+                                            onFocus={() => {
+                                                setIsFocusedConfirmPassword(
+                                                    true,
+                                                );
+                                            }}
+                                            value={value}
+                                        />
+                                        <TouchableOpacity
+                                            onPress={() =>
+                                                setShowConfirmPassword(
+                                                    !showConfirmPassword,
+                                                )
+                                            }
+                                            className="absolute right-4 top-1/2 -translate-y-1/2"
+                                            activeOpacity={0.8}
+                                            accessibilityLabel={
+                                                showConfirmPassword
+                                                    ? 'Hide password'
+                                                    : 'Show password'
+                                            }
+                                            accessibilityRole="button"
+                                        >
+                                            <Ionicons
+                                                name={
+                                                    showConfirmPassword
+                                                        ? 'eye-off-outline'
+                                                        : 'eye-outline'
+                                                }
+                                                size={22}
+                                                color="#63677E"
+                                            />
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                            )}
+                        />
+                        {errors.confirmPassword && (
+                            <Text className="text-red-500 text-sm">
+                                {errors.confirmPassword.message}
+                            </Text>
+                        )}
+                    </View>
 
-	const onSubmit = async (data: SignupForm) => {
-		try {
-			Keyboard.dismiss();
-			setIsLoading(true);
-			const response = await authService.signup(
-				data.name,
-				data.email,
-				data.password,
-			);
-			Toast.show({
-				type: "success",
-				text1: response.message,
-				visibilityTime: 2000,
-			});
-			router.replace({
-				pathname: "/(auth)/verify",
-				params: {
-					email: data.email,
-					type: "signup",
-					reason: "verify_email",
-				},
-			});
-		} catch (error) {
-			if (error instanceof AxiosError) {
-				Toast.show({
-					type: "error",
-					text1:
-						error.response?.data.message ||
-						"An unknown error occurred",
-					visibilityTime: 2000,
-				});
-			}
-		} finally {
-			setIsLoading(false);
-		}
-	};
-	return (
-		<AuthLayout>
-			<AuthForm
-				title={t("auth.signup.title")}
-				subtitle={t("auth.signup.subtitle")}
-			>
-				<View className="gap-6">
-					{/* Name */}
-					<View>
-						<Text className="text-[#63677E] mb-2 text-md">
-							{t("auth.signup.name")}
-						</Text>
-						<Controller
-							control={control}
-							name="name"
-							render={({
-								field: { onChange, onBlur, value },
-							}) => (
-								<TextInput
-									placeholder={t("auth.signup.name")}
-									placeholderTextColor={"#63677E"}
-									keyboardType="default"
-									autoCapitalize="none"
-									autoComplete="name"
-									textContentType="name"
-									accessibilityLabel={t("auth.signup.name")}
-									accessibilityRole="text"
-									accessibilityState={{ disabled: false }}
-									accessibilityValue={{ text: "" }}
-									className="border bg-[#F3F4F9] border-gray-300 rounded-2xl p-4 focus:border-mainBlue text-black"
-									multiline={false}
-									onChangeText={onChange}
-									onBlur={onBlur}
-									value={value}
-								/>
-							)}
-						/>
-						{errors.name && (
-							<Text className="text-red-500 text-sm">
-								{errors.name.message}
-							</Text>
-						)}
-					</View>
-					{/* Email */}
-					<View>
-						<Text className="text-[#63677E] mb-2 text-md">
-							{t("auth.signup.email")}
-						</Text>
-						<Controller
-							control={control}
-							name="email"
-							render={({
-								field: { onChange, onBlur, value },
-							}) => (
-								<TextInput
-									placeholder={t("auth.signup.email")}
-									placeholderTextColor={"#63677E"}
-									keyboardType="email-address"
-									autoCapitalize="none"
-									autoComplete="email"
-									textContentType="emailAddress"
-									accessibilityLabel={t("auth.signup.email")}
-									accessibilityRole="text"
-									accessibilityState={{ disabled: false }}
-									accessibilityValue={{ text: "" }}
-									className="border bg-[#F3F4F9] border-gray-300 rounded-2xl p-4 focus:border-mainBlue text-black"
-									multiline={false}
-									onChangeText={onChange}
-									onBlur={onBlur}
-									value={value}
-								/>
-							)}
-						/>
-						{errors.email && (
-							<Text className="text-red-500 text-sm">
-								{errors.email.message}
-							</Text>
-						)}
-					</View>
-					{/* Password */}
-					<View>
-						<Text className="text-[#63677E] mb-2 text-md">
-							{t("auth.signup.password")}
-						</Text>
-						<Controller
-							control={control}
-							name="password"
-							render={({
-								field: { onChange, onBlur, value },
-							}) => (
-								<View className="relative">
-									<TextInput
-										placeholder={t("auth.signup.password")}
-										placeholderTextColor={"#63677E"}
-										textAlign={
-											i18n.language === "ar"
-												? "right"
-												: "left"
-										}
-										style={{
-											writingDirection:
-												i18n.language === "ar"
-													? "rtl"
-													: "ltr",
-										}}
-										keyboardType="default"
-										autoCapitalize="none"
-										autoComplete="password"
-										textContentType="password"
-										secureTextEntry={!showPassword}
-										accessibilityLabel={t(
-											"auth.signup.password",
-										)}
-										accessibilityRole="text"
-										accessibilityState={{ disabled: false }}
-										accessibilityValue={{ text: "" }}
-										className="border bg-[#F3F4F9] border-gray-300 rounded-2xl p-4 focus:border-mainBlue text-black"
-										multiline={false}
-										onChangeText={onChange}
-										onBlur={onBlur}
-										value={value}
-									/>
-									<TouchableOpacity
-										onPress={() =>
-											setShowPassword(!showPassword)
-										}
-										className="absolute right-4 top-1/2 -translate-y-1/2"
-										activeOpacity={0.8}
-										accessibilityLabel={
-											showPassword
-												? "Hide password"
-												: "Show password"
-										}
-										accessibilityRole="button"
-									>
-										<Ionicons
-											name={
-												showPassword
-													? "eye-off-outline"
-													: "eye-outline"
-											}
-											size={22}
-											color="#63677E"
-										/>
-									</TouchableOpacity>
-								</View>
-							)}
-						/>
-						{errors.password && (
-							<Text className="text-red-500 text-sm">
-								{errors.password.message}
-							</Text>
-						)}
-					</View>
-					{/* Confirm Password */}
-					<View>
-						<Text className="text-[#63677E] mb-2 text-md">
-							{t("auth.signup.confirmPassword")}
-						</Text>
-						<Controller
-							control={control}
-							name="confirmPassword"
-							render={({
-								field: { onChange, onBlur, value },
-							}) => (
-								<View className="relative">
-									<TextInput
-										placeholder={t(
-											"auth.signup.confirmPassword",
-										)}
-										textAlign={
-											i18n.language === "ar"
-												? "right"
-												: "left"
-										}
-										style={{
-											writingDirection:
-												i18n.language === "ar"
-													? "rtl"
-													: "ltr",
-										}}
-										placeholderTextColor={"#63677E"}
-										keyboardType="default"
-										autoCapitalize="none"
-										autoComplete="password"
-										textContentType="password"
-										secureTextEntry={!showConfirmPassword}
-										accessibilityLabel={t(
-											"auth.signup.confirmPassword",
-										)}
-										accessibilityRole="text"
-										accessibilityState={{ disabled: false }}
-										accessibilityValue={{ text: "" }}
-										className="border bg-[#F3F4F9] border-gray-300 rounded-2xl p-4 focus:border-mainBlue text-black"
-										multiline={false}
-										onChangeText={onChange}
-										onBlur={onBlur}
-										value={value}
-									/>
-									<TouchableOpacity
-										onPress={() =>
-											setShowConfirmPassword(
-												!showConfirmPassword,
-											)
-										}
-										className="absolute right-4 top-1/2 -translate-y-1/2"
-										activeOpacity={0.8}
-										accessibilityLabel={
-											showConfirmPassword
-												? "Hide password"
-												: "Show password"
-										}
-										accessibilityRole="button"
-									>
-										<Ionicons
-											name={
-												showConfirmPassword
-													? "eye-off-outline"
-													: "eye-outline"
-											}
-											size={22}
-											color="#63677E"
-										/>
-									</TouchableOpacity>
-								</View>
-							)}
-						/>
-						{errors.confirmPassword && (
-							<Text className="text-red-500 text-sm">
-								{errors.confirmPassword.message}
-							</Text>
-						)}
-					</View>
+                    {/* Sign Up Button */}
+                    <CustomButton
+                        title={t('auth.signup.signUp')}
+                        onPress={handleSubmit(onSubmit)}
+                        fullWidth
+                        disabled={isLoading}
+                    />
 
-					{/* Sign Up Button */}
-					<CustomButton
-						title={t("auth.signup.signUp")}
-						onPress={handleSubmit(onSubmit)}
-						fullWidth
-						disabled={isLoading}
-					/>
-
-					<View className="flex-row items-center justify-center gap-2">
-						<Text className="text-[#63677E] text-md">
-							{t("auth.signup.haveAccount")}
-						</Text>
-						<TouchableOpacity
-							onPress={() => router.push("/(auth)/login" as Href)}
-						>
-							<Text className="text-mainBlue text-md">
-								{t("auth.signup.signIn")}
-							</Text>
-						</TouchableOpacity>
-					</View>
-				</View>
-			</AuthForm>
-		</AuthLayout>
-	);
+                    <View className="flex-row items-center justify-center gap-2">
+                        <Text className="text-[#63677E] text-md">
+                            {t('auth.signup.haveAccount')}
+                        </Text>
+                        <TouchableOpacity
+                            onPress={() => router.push('/(auth)/login' as Href)}
+                        >
+                            <Text className="text-mainBlue text-md">
+                                {t('auth.signup.signIn')}
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </AuthForm>
+        </AuthLayout>
+    );
 };

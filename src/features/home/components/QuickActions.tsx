@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import { ScrollView, View } from "react-native";
 import ActionCard from "./cards/ActionCard";
 import Section from "./Section";
+import { router } from "expo-router";
 
 export default function QuickActions() {
 	const { t } = useTranslation();
@@ -25,7 +26,7 @@ export default function QuickActions() {
 			title: t("home.quickActions.settings"),
 			description: t("home.quickActions.settingsDescription"),
             iconColor: "#5140E8",
-			onPress: () => {},
+			onPress: () => router.push('/(profileEditors)/language'),
 		},
 	];
 	return (
@@ -38,7 +39,7 @@ export default function QuickActions() {
 			<ScrollView
 				horizontal
 				showsHorizontalScrollIndicator={false}
-				contentContainerStyle={{ paddingRight: 8 }}
+				// contentContainerStyle={{ paddingRight: 8 }}
 			>
 				<View className="flex-row items-stretch justify-between gap-4 flex-nowrap">
 					{quickActions.map((action) => (

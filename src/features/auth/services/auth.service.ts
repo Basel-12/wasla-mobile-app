@@ -13,11 +13,12 @@ export const authService = {
 		}
 	},
 
-	signup: async (name: string, email: string, password: string) => {
+	signup: async (name: string, email: string, password: string  , preferredLanguage: string) => {
 		const response = await api.post("/api/v1/auth/signup", {
 			name,
 			email,
 			password,
+			preferredLanguage,
 		});
 		return response.data;
 	},

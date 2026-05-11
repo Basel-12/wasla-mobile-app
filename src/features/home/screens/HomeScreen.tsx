@@ -11,20 +11,19 @@ export default function HomeScreen() {
 	const insets = useSafeAreaInsets();
 	return (
 		<View className="flex-1">
-			<SafeAreaView edges={["top"]} className="bg-bgGrey flex-0" />
 			<SafeAreaView
-				className="flex-1 bg-white"
-				edges={["left", "right", "bottom"]}
+				className="flex-1 bg-bgGrey"
 			>
 				<ScrollView
 					contentContainerStyle={{
 						flexGrow: 1,
-						paddingBottom: insets.bottom + 32,
+						paddingBottom: insets.bottom + 64,
 						// paddingTop: insets.top,
 					}}
+					showsVerticalScrollIndicator={false}
 				>
 					<Header />
-					<View className="bg-white flex-1 p-6 gap-4">
+					<View className="bg-bgGrey flex-1 p-6 gap-4">
 						<QuickActions />
 						{/* stats cards section  */}
 						<Notifications />

@@ -1,0 +1,23 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'expo.modules.mediapipe'
+version = '0.7.10'
+
+android {
+  namespace "expo.modules.mediapipe"
+  defaultConfig {
+    versionCode 1
+    versionName "0.7.10"
+    minSdkVersion 24
+  }
+  lintOptions {
+    abortOnError false
+  }
+}
+
+dependencies {
+    implementation 'com.google.mediapipe:tasks-vision:0.10.14'
+}

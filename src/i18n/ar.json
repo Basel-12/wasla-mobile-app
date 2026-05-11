@@ -1,151 +1,237 @@
 {
-	"onboarding": {
-		"slide1": {
-			"title": "التواصل دون حواجز",
-			"description": "توصل بين الإشارات اليدوية والكلمات في الوقت الفعلي باستخدام تقنية AI.",
-			"buttonText": "التالي"
-		},
-		"slide2": {
-			"title": " ترجمة الإشارات فورا",
-			"description": "اضبط الكاميرا على أي إشارة يدي التواصل بسهولة.",
-			"buttonText": "التالي"
-		},
-		"slide3": {
-			"title": "التواصل مع المجتمع",
-			"description": "انضم إلى مجتمع رائع حيث يمكنك مشاركة التجارب والتعلم معاً وإنشاء علاقات دائمة.",
-			"buttonText": "ابدأ"
-		},
-		"skip": "تخطي"
-	},
-	"auth": {
-		"login": {
-			"title": "مرحبا بعودتك",
-			"subtitle": "تسجيل الدخول للمتابعة",
-			"email": "البريد الإلكتروني",
-			"emailPlaceholder": "أدخل بريدك الإلكتروني",
-			"password": "كلمة المرور",
-			"passwordPlaceholder": "********",
-			"forgotPassword": "هل نسيت كلمة المرور؟",
-			"signIn": "تسجيل الدخول",
-			"signUp": "سجل الآن",
-			"noAccount": "ليس لديك حساب؟"
-		},
-		"forgetPassword": {
-			"title": "هل نسيت كلمة المرور؟",
-			"subtitle": "أدخل بريدك الإلكتروني لإعادة تعيين كلمة المرور",
-			"email": "البريد الإلكتروني",
-			"emailPlaceholder": "أدخل بريدك الإلكتروني",
-			"sendCode": "إرسال الرمز",
-			"backToLogin": "العودة إلى تسجيل الدخول"
-		},
-		"signup": {
-			"title": "إنشاء حساب",
-			"subtitle": "سجل الآن للبدء",
-			"name": "الاسم",
-			"email": "البريد الإلكتروني",
-			"password": "كلمة المرور",
-			"confirmPassword": "تأكيد كلمة المرور",
-			"phone": "رقم الهاتف",
-			"signUp": "سجل الآن",
-			"signIn": "تسجيل الدخول",
-			"haveAccount": "لديك حساب؟"
-		},
-		"verify": {
-			"title": "تحقق من بريدك الإلكتروني",
-			"subtitle": "لقد أرسلنا رمز التحقق إلى بريدك الإلكتروني",
-			"verify": "تحقق",
-			"didntReceive": "لم تستلم الرمز؟",
-			"resend": "إعادة الإرسال",
-			"resendIn": "يمكن إعادة الإرسال في"
-		},
-		"validation": {
-			"login": {
-				"email": {
-					"invalid": "يرجى إدخال عنوان بريد إلكتروني صالح"
-				},
-				"password": {
-					"min": "يجب أن يكون كلمة المرور على الأقل 8 أحرف"
-				}
-			},
-			"signup": {
-				"name": {
-					"required": "يرجى إدخال الاسم"
-				},
-				"email": {
-					"invalid": "يرجى إدخال عنوان بريد إلكتروني صالح"
-				},
-				"password": {
-					"min": "يجب أن يكون كلمة المرور على الأقل 8 أحرف"
-				},
-				"confirmPassword": {
-					"min": "يجب أن يكون تأكيد كلمة المرور على الأقل 8 أحرف",
-					"match": "يرجى إدخال كلمة المرور الصحيحة"
-				}
-			},
-			"resetPassword": {
-				"newPassword": {
-					"min": "يجب أن يكون كلمة المرور الجديدة على الأقل 8 أحرف"
-				},
-				"confirmNewPassword": {
-					"min": "يجب أن يكون تأكيد كلمة المرور الجديدة على الأقل 8 أحرف",
-					"match": "يرجى إدخال كلمة المرور الصحيحة"
-				}
-			}
-		},
-		"resetPassword": {
-			"title": "إعادة تعيين كلمة المرور",
-			"subtitle": "أدخل كلمة المرور الجديدة",
-			"newPassword": "كلمة المرور الجديدة",
-			"newPasswordPlaceholder": "أدخل كلمة المرور الجديدة",
-			"confirmNewPassword": "تأكيد كلمة المرور الجديدة",
-			"confirmNewPasswordPlaceholder": "********",
-			"resetPassword": "إعادة تعيين كلمة المرور"
-		}
-	},
-	"notFound": {
-		"title": "هناك خطأ ما",
-		"description": "لم نتمكن من العثور على الصفحة التي تبحث عنها.",
-		"buttonText": "العودة إلى الرئيسية"
-	},
-	"tabs": {
-		"home": "الرئيسية",
-		"scan": "الكاميرا",
-		"profile": "الحساب"
-	},
-	"home": {
-		"header": {
-			"welcome": "مرحبا بعودتك"
-		},
-		"quickActions": {
-			"title": "الإجراءات السريعة",
-			"viewAll": "عرض الكل",
-			"camera": "الكاميرا",
-			"cameraDescription": "قم بمسح أي إشارة للبدء",
-			"favorites": "المفضلة",
-			"favoritesDescription": "عرض الإشارات المفضلة",
-			"settings": "الإعدادات",
-			"settingsDescription": "تغيير اللغة"
-		},
-		"notifications": {
-			"title": "الإشعارات",
-			"viewAll": "عرض الكل",
-			"noNotifications": "لا يوجد إشعارات"
-		}
-	},
-	"profile": {
-		"title": "الحساب",
-		"name": "الاسم",
-		"email": "البريد الإلكتروني",
-		"phone": "رقم الهاتف",
-		"language": "اللغة",
-		"theme": "السمة",
-		"logout": "تسجيل الخروج",
-		"changePhoto": "تغيير الصورة الشخصية",
-		"takePhoto": "التقط صورة",
-		"chooseFromGallery": "اختر من المعرض",
-		"cancel": "إلغاء"
-	},
-	"camera": {
-		"scan": "الكاميرا"
-	}
+    "onboarding": {
+        "slide1": {
+            "title": "التواصل دون حواجز",
+            "description": "توصل بين الإشارات اليدوية والكلمات في الوقت الفعلي باستخدام تقنية AI.",
+            "buttonText": "التالي"
+        },
+        "slide2": {
+            "title": " ترجمة الإشارات فورا",
+            "description": "اضبط الكاميرا على أي إشارة يدي التواصل بسهولة.",
+            "buttonText": "التالي"
+        },
+        "slide3": {
+            "title": "التواصل مع المجتمع",
+            "description": "انضم إلى مجتمع رائع حيث يمكنك مشاركة التجارب والتعلم معاً وإنشاء علاقات دائمة.",
+            "buttonText": "ابدأ"
+        },
+        "skip": "تخطي"
+    },
+    "auth": {
+        "login": {
+            "title": "مرحبا بعودتك",
+            "subtitle": "تسجيل الدخول للمتابعة",
+            "email": "البريد الإلكتروني",
+            "emailPlaceholder": "أدخل بريدك الإلكتروني",
+            "password": "كلمة المرور",
+            "passwordPlaceholder": "********",
+            "forgotPassword": "هل نسيت كلمة المرور؟",
+            "signIn": "تسجيل الدخول",
+            "signUp": "سجل الآن",
+            "noAccount": "ليس لديك حساب؟"
+        },
+        "forgetPassword": {
+            "title": "هل نسيت كلمة المرور؟",
+            "subtitle": "أدخل بريدك الإلكتروني لإعادة تعيين كلمة المرور",
+            "email": "البريد الإلكتروني",
+            "emailPlaceholder": "أدخل بريدك الإلكتروني",
+            "sendCode": "إرسال الرمز",
+            "backToLogin": "العودة إلى تسجيل الدخول"
+        },
+        "signup": {
+            "title": "إنشاء حساب",
+            "subtitle": "سجل الآن للبدء",
+            "name": "الاسم",
+            "email": "البريد الإلكتروني",
+            "password": "كلمة المرور",
+            "confirmPassword": "تأكيد كلمة المرور",
+            "phone": "رقم الهاتف",
+            "signUp": "سجل الآن",
+            "signIn": "تسجيل الدخول",
+            "haveAccount": "لديك حساب؟"
+        },
+        "verify": {
+            "title": "تحقق من بريدك الإلكتروني",
+            "subtitle": "لقد أرسلنا رمز التحقق إلى بريدك الإلكتروني",
+            "verify": "تحقق",
+            "didntReceive": "لم تستلم الرمز؟",
+            "resend": "إعادة الإرسال",
+            "resendIn": "يمكن إعادة الإرسال في"
+        },
+        "validation": {
+            "noSpaces": "لا يمكن لكلمة المرور أن تحتوي على مسافات",
+            "login": {
+                "email": {
+                    "invalid": "يرجى إدخال عنوان بريد إلكتروني صالح"
+                },
+                "password": {
+                    "min": "يجب أن يكون كلمة المرور على الأقل 8 أحرف"
+                }
+            },
+            "signup": {
+                "name": {
+                    "required": "يرجى إدخال الاسم"
+                },
+                "email": {
+                    "invalid": "يرجى إدخال عنوان بريد إلكتروني صالح"
+                },
+                "password": {
+                    "min": "يجب أن يكون كلمة المرور على الأقل 8 أحرف"
+                },
+                "confirmPassword": {
+                    "min": "يجب أن يكون تأكيد كلمة المرور على الأقل 8 أحرف",
+                    "match": "يرجى إدخال كلمة المرور الصحيحة"
+                }
+            },
+            "resetPassword": {
+                "newPassword": {
+                    "min": " 8 أحرف على الأقل",
+                    "uppercase": " حرف واحد  كبير على الأقل",
+                    "number": " رقم واحد على الأقل",
+                    "special": " حرف خاص واحد على الأقل (@, _, -)"
+                },
+                "confirmNewPassword": {
+                    "min": "يجب أن يكون تأكيد كلمة المرور الجديدة على الأقل 8 أحرف",
+                    "match": "يرجى إدخال كلمة المرور الصحيحة"
+                }
+            },
+            "offline": {
+                "title": "أنت غير متصل بالإنترنت",
+                "description": "يرجى التحقق من اتصالك بالإنترنت"
+            },
+            "online": {
+                "title": "مرحبا بعودتك",
+                "description": "أنت الآن متصل بالإنترنت"
+            }
+        },
+        "resetPassword": {
+            "title": "إعادة تعيين كلمة المرور",
+            "subtitle": "أدخل كلمة المرور الجديدة",
+            "newPassword": "كلمة المرور الجديدة",
+            "newPasswordPlaceholder": "أدخل كلمة المرور الجديدة",
+            "confirmNewPassword": "تأكيد كلمة المرور الجديدة",
+            "confirmNewPasswordPlaceholder": "أدخل كلمة المرور الجديدة مرة أخرى",
+            "resetPassword": "إعادة تعيين كلمة المرور",
+            "mustContain": "كلمة المرور يجب أن تحتوي على"
+        }
+    },
+    "notFound": {
+        "title": "هناك خطأ ما",
+        "description": "لم نتمكن من العثور على الصفحة التي تبحث عنها.",
+        "buttonText": "العودة إلى الرئيسية"
+    },
+    "tabs": {
+        "home": "الرئيسية",
+        "scan": "الكاميرا",
+        "profile": "الحساب"
+    },
+    "home": {
+        "header": {
+            "welcome": "مرحبا بعودتك"
+        },
+        "quickActions": {
+            "title": "الإجراءات السريعة",
+            "viewAll": "عرض الكل",
+            "camera": "الكاميرا",
+            "cameraDescription": "قم بمسح أي إشارة للبدء",
+            "favorites": "المفضلة",
+            "favoritesDescription": "عرض الإشارات المفضلة",
+            "settings": "الإعدادات",
+            "settingsDescription": "تغيير اللغة"
+        },
+        "notifications": {
+            "title": "الإشعارات",
+            "viewAll": "عرض الكل",
+            "noNotifications": "لا يوجد إشعارات",
+            "timeAgo": "منذ {{value}}{{unit}}",
+            "units": {
+                "s": "ث",
+                "m": "د",
+                "h": "س",
+                "d": "ي"
+            }
+        }
+    },
+    "profile": {
+        "title": "الحساب",
+        "description": "إدارة الحساب والإعدادات",
+        "name": "الاسم",
+        "email": "البريد الإلكتروني",
+        "password": "كلمة المرور",
+        "passwordPlaceholder": "********",
+        "phone": "رقم الهاتف",
+        "language": "اللغة",
+        "languages": {
+            "ar": "🇪🇬 العربية (ar)",
+            "en": "🇬🇧 الإنجليزية (en)"
+        },
+        "theme": "السمة",
+        "logout": "تسجيل الخروج",
+        "logoutDescription": "تسجيل الخروج من حسابك",
+        "changePhoto": "تغيير الصورة الشخصية",
+        "takePhoto": "التقط صورة",
+        "chooseFromGallery": "اختر من المعرض",
+        "cancel": "إلغاء"
+    },
+    "profileEditors": {
+        "language": {
+            "title": "اللغة",
+            "description": "اختر اللغة المفضلة لديك",
+            "languages": {
+                "ar": "العربية",
+                "en": "English"
+            },
+            "languagesHints": {
+                "ar": "Arabic",
+                "en": "English"
+            }
+        },
+        "changePassword": {
+            "title": "تغيير كلمة المرور",
+            "description": "أدخل كلمة المرور القديمة وكلمة المرور الجديدة",
+            "oldPassword": "كلمة المرور القديمة",
+            "oldPasswordPlaceholder": "أدخل كلمة المرور القديمة",
+            "newPassword": "كلمة المرور الجديدة",
+            "newPasswordPlaceholder": "أدخل كلمة المرور الجديدة",
+            "confirmPassword": "تأكيد كلمة المرور",
+            "confirmPasswordPlaceholder": "أدخل كلمة المرور الجديدة مرة أخرى",
+            "changePassword": "تغيير كلمة المرور"
+        },
+        "editProfile": {
+            "title": "تعديل البيانات الشخصية",
+            "description": "تعديل البيانات الشخصية",
+            "name": "الاسم",
+            "namePlaceholder": "أدخل الاسم",
+            "phone": "رقم الهاتف",
+            "phonePlaceholder": "أدخل رقم الهاتف",
+            "phoneInvalid": "يرجى إدخال رقم هاتف صالح",
+            "save": "حفظ",
+            "nameRequired": "يرجى إدخال الاسم",
+            "phoneRequired": "يرجى إدخال رقم الهاتف",
+            "nameMin": "يجب أن يكون الاسم على الأقل 2 أحرف",
+            "nameMax": "يجب أن يكون الاسم على الأقل 20 حرف",
+            "selectCountry": "اختر الدولة",
+            "searchCountry": "ابحث عن دولة...",
+            "noCountriesFound": "لم يتم العثور على دول"
+        }
+    },
+    "camera": {
+        "scan": "الكاميرا"
+    },
+    "app": {
+        "logout": {
+            "title": "تسجيل الخروج",
+            "message": "هل أنت متأكد من تسجيل الخروج؟",
+            "cancel": "إلغاء",
+            "logout": "تسجيل الخروج"
+        },
+        "offline": {
+            "title": "أنت غير متصل بالإنترنت",
+            "description": "يرجى التحقق من اتصالك بالإنترنت"
+        },
+        "online": {
+            "title": "مرحبا بعودتك",
+            "description": "أنت الآن متصل بالإنترنت"
+        }
+    }
 }

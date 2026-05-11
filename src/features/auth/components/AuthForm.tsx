@@ -1,4 +1,4 @@
-import { useTranslation } from "react-i18next";
+import { Image } from "expo-image";
 import { Text, View } from "react-native";
 
 type AuthFormProps = {
@@ -7,6 +7,7 @@ type AuthFormProps = {
 	children: React.ReactNode;
 	footer?: React.ReactNode;
 	titleClassName?: string;
+	imageSource?: string;
 };
 
 export const AuthForm = ({
@@ -15,13 +16,23 @@ export const AuthForm = ({
 	children,
 	footer,
 	titleClassName,
+	imageSource,
 }: AuthFormProps) => {
-	const { t } = useTranslation();
 
 	return (
 		<View
-			className={`bg-white rounded-3xl p-6  border border-gray-200/50 gap-6 `}
+			className={`p-2 gap-6 `}
 		>
+
+			{imageSource && (
+			<View className="w-full flex-row items-center justify-center">
+				<Image
+					source={imageSource}
+					style={{ width: "100%", height: 200 }}
+					contentFit="contain"
+				/>
+			</View>
+			)}
 			<View className="bg-secondary h-1 w-14 rounded-full" />
 			{/* Header */}
 			<View className="">
