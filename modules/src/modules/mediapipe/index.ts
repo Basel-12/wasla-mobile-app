@@ -1,8 +1,6 @@
-import {
-	EventEmitter,
-	EventSubscription,
-	requireNativeModule,
-} from "expo-modules-core";
+import { requireNativeViewManager } from "expo-modules-core";
+import React from "react";
+import { StyleProp, ViewStyle } from "react-native";
 
 export interface Landmark {
 	x: number;
@@ -11,39 +9,34 @@ export interface Landmark {
 }
 
 export interface LandmarkResult {
-	hands: Landmark[][]; // up to 2 hands, 21 landmarks each
-	handedness: string[]; // 'Left' or 'Right' per hand
-	face: Landmark[]; // 478 face landmarks
+	hands: Landmark[][];
+	handedness: string[];
+	face: Landmark[];
 	timestamp: number;
 }
 
-type MediapipeEvents = {
-    onLandmarks: LandmarkResult;
-    onReady: { status: string };
-    onError: { message: string };
-};
+export interface MediapipeCameraViewProps {
+	style?: StyleProp<ViewStyle>;
+	facing?: "front" | "back";
+	onLandmarks?: (event: { nativeEvent: LandmarkResult }) => void;
+	onReady?: (event: { nativeEvent: { status: string } }) => void;
+	onError?: (event: { nativeEvent: { message: string } }) => void;
+}
 
-const MediapipeNative = requireNativeModule("Mediapipe");
-const emitter = new EventEmitter<MediapipeEvents>(MediapipeNative);
+const NativeView = requireNativeViewManager("Mediapipe");
 
-export const Mediapipe = {
-	startDetection(): Promise<void> {
-		return MediapipeNative.startDetection();
-	},
-
-	stopDetection(): Promise<void> {
-		return MediapipeNative.stopDetection();
-	},
-
-	onLandmarks(callback: (result: LandmarkResult) => void): EventSubscription {
-		return emitter.addListener("onLandmarks", callback);
-	},
-
-	onReady(callback: (status: { status: string }) => void): EventSubscription {
-		return emitter.addListener("onReady", callback);
-	},
-
-	onError(callback: (error: { message: string }) => void): EventSubscription {
-		return emitter.addListener("onError", callback);
-	},
-};
+export function MediapipeCameraView({
+	style,
+	facing = "front",
+	onLandmarks,
+	onReady,
+	onError,
+}: MediapipeCameraViewProps) {
+	return React.createElement(NativeView, {
+		style,
+		facing,
+		onLandmarks,
+		onReady,
+		onError,
+	});
+}

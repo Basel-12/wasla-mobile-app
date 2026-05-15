@@ -15,7 +15,8 @@
 		"androidStatusBar": {
 			"barStyle": "dark-content",
 			"backgroundColor": "#f6f6f8",
-			"translucent": false
+			"translucent": false,
+			"googleServicesFile": "./GoogleService-Info.plist"
 		},
 		"android": {
 			"adaptiveIcon": {
@@ -81,9 +82,9 @@
 				}
 			],
 			[
-				"expo-camera",
+				"@react-native-google-signin/google-signin",
 				{
-					"cameraPermission": "Allow Wasla to use your camera"
+					"iosUrlScheme": "com.googleusercontent.apps.287792070205-rmue7rsmhml1kgp3qhen4ks3gr9857pa"
 				}
 			]
 		],
