@@ -1,3 +1,5 @@
+import OfflineScreen from '@/components/OfflineScreen';
+import { configureGoogleSignIn } from '@/features/auth/utils/google-signin';
 import '@/i18n/i18n';
 import { initializeLanguage } from '@/i18n/i18n';
 import { useNotificationListeners } from '@/services/notifications.listener';
@@ -12,28 +14,40 @@ import {
 import NetInfo, { NetInfoState } from '@react-native-community/netinfo';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Href, router, SplashScreen, Stack } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { StatusBar, Text, View } from 'react-native';
+import { StatusBar, StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 import '../../global.css';
 
 SplashScreen.preventAutoHideAsync();
+configureGoogleSignIn();
 export default function RootLayout() {
     const [isReady, setIsReady] = useState(false);
     const { t } = useTranslation();
     const [initialRoute, setInitialRoute] = useState<Href | undefined>(
         undefined,
     );
+    const [online, setOnline] = useState<boolean>(true);
+    const prevOnlineRef = useRef<boolean | null>(null);
     const [fontsLoaded, fontError] = useFonts({
         Cairo_400Regular,
         Cairo_600SemiBold,
         Cairo_700Bold,
     });
 
-    const [queryClient] = useState(() => new QueryClient());
+    const [queryClient] = useState(
+        () =>
+            new QueryClient({
+                defaultOptions: {
+                    queries: {
+                        networkMode: 'offlineFirst',
+                    },
+                },
+            }),
+    );
 
     //listen to notifications
     useNotificationListeners();
@@ -69,23 +83,31 @@ export default function RootLayout() {
 
     useEffect(() => {
         const unsubscribe = NetInfo.addEventListener((state: NetInfoState) => {
-            const online = state.isConnected && state.isInternetReachable;
+            if (state.isInternetReachable === null) return;
 
-            if (!online) {
-                Toast.show({
-                    type: 'error',
-                    text1: t('app.offline.title'),
-                    text2: t('app.offline.description'),
-                    visibilityTime: 4000,
-                });
-            } else {
-                Toast.show({
-                    type: 'success',
-                    text1: t('app.online.title'),
-                    text2: t('app.online.description'),
-                    visibilityTime: 4000,
-                });
-            }
+            const isOnline = !!(state.isConnected && state.isInternetReachable);
+
+            // NetInfo fired but nothing changed — bail out completely
+            if (prevOnlineRef.current === isOnline) return;
+
+            const isFirstDetermination = prevOnlineRef.current === null;
+            prevOnlineRef.current = isOnline;
+
+            setOnline(isOnline);
+
+            // Don't show toast on initial load — only on actual transitions
+            if (isFirstDetermination) return;
+
+            Toast.show({
+                type: isOnline ? 'success' : 'error',
+                text1: t(isOnline ? 'app.online.title' : 'app.offline.title'),
+                text2: t(
+                    isOnline
+                        ? 'app.online.description'
+                        : 'app.offline.description',
+                ),
+                visibilityTime: 4000,
+            });
         });
 
         return () => unsubscribe();
@@ -134,25 +156,6 @@ export default function RootLayout() {
         ),
     };
 
-    if (!isReady) {
-        return (
-            <SafeAreaProvider>
-                <View style={{ flex: 1, backgroundColor: '#f6f6f8' }}>
-                    <StatusBar
-                        backgroundColor="#f6f6f8"
-                        barStyle="dark-content"
-                        translucent={false}
-                    />
-                </View>
-                <Toast
-                    config={toastConfig}
-                    position="bottom"
-                    visibilityTime={2500}
-                />
-            </SafeAreaProvider>
-        );
-    }
-
     return (
         <>
             <QueryClientProvider client={queryClient}>
@@ -166,15 +169,23 @@ export default function RootLayout() {
                             translucent={false}
                         />
                         <View style={{ flex: 1, backgroundColor: '#f6f6f8' }}>
-                            <Stack screenOptions={{ headerShown: false }}>
-                                <Stack.Screen name="(onboarding)" />
-                                <Stack.Screen name="(auth)" />
-                                <Stack.Screen name="(app)" />
-                                <Stack.Screen name="notifications" />
-                                <Stack.Screen name="(profileEditors)" />
-                                <Stack.Screen name="+not-found" />
-                            </Stack>
+                            {isReady && (
+                                <Stack screenOptions={{ headerShown: false }}>
+                                    <Stack.Screen name="(onboarding)" />
+                                    <Stack.Screen name="(auth)" />
+                                    <Stack.Screen name="(app)" />
+                                    <Stack.Screen name="notifications" />
+                                    <Stack.Screen name="scanner" />
+                                    <Stack.Screen name="(profileEditors)" />
+                                    <Stack.Screen name="+not-found" />
+                                </Stack>
+                            )}
                         </View>
+                        {!online && (
+                            <View style={StyleSheet.absoluteFill}>
+                                <OfflineScreen />
+                            </View>
+                        )}
                     </GestureHandlerRootView>
                     <Toast
                         config={toastConfig}

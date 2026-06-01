@@ -141,19 +141,19 @@ export default function NotificationsScreen() {
                             markAsRead={() => markAsRead(item.id)}
                             time={item.createdAt}
                             isRead={item.isRead}
-                            onPress={() =>
-                                setSelectedNotification(item.notification)
-                            }
+                            onPress={() => setSelectedNotification(item)}
                         />
                     )}
                 />
             )}
 
-            <NotificationDetailSheet
-                notification={selectedNotification}
-                onClose={() => setSelectedNotification(null)}
-                time={selectedNotification?.createdAt}
-            />
+            {selectedNotification && (
+                <NotificationDetailSheet
+                    notification={selectedNotification.notification}
+                    time={selectedNotification.createdAt}
+                    onClose={() => setSelectedNotification(null)}
+                />
+            )}
         </SafeAreaView>
     );
 }

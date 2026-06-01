@@ -61,4 +61,13 @@ export const authService = {
 		});
 		return response.data;
 	},
+
+
+	googleLogin: async (token: string) => {
+		const response = await api.post("/api/v1/auth/google-login", {
+			token,
+		});
+		console.log(response.data);
+		return response.data;
+	}
 };

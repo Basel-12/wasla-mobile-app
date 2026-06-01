@@ -28,7 +28,9 @@
             "forgotPassword": "Forgot Password?",
             "signIn": "Log In",
             "signUp": "Sign Up",
-            "noAccount": "Don't have an account?"
+            "noAccount": "Don't have an account?",
+            "signInWithGoogle": "Continue with Google",
+            "or": "Or continue with"
         },
         "signup": {
             "title": "Create an Account",
@@ -208,7 +210,11 @@
         }
     },
     "camera": {
-        "scan": "Scan"
+        "scan": "Scan",
+        "sign": "Detected Sign",
+        "translation": "English Translation",
+        "sound": "Play Sound",
+        "favourite": "Add To Fav"
     },
     "app": {
         "logout": {
@@ -219,7 +225,11 @@
         },
         "offline": {
             "title": "You are offline",
-            "description": "Please check your internet connection"
+            "description": "Please check your internet connection",
+            "longDescription": "Looks like you're not connected to the internet.Please check your connection and try again",
+            "advice1": "Check your wifi or mobile data",
+            "advice2": "Make sure airplane mode is off",
+            "advice3": "Try again in a few moments"
         },
         "online": {
             "title": "Welcome Back",

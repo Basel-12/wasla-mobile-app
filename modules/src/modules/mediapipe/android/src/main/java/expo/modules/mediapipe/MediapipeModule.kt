@@ -9,7 +9,7 @@ class MediapipeModule : Module() {
     Name("Mediapipe")
 
     View(MediapipeCameraView::class) {
-      Events("onLandmarks", "onError", "onReady")
+      Events("onLandmarks", "onError", "onReady", "onSignDetected")
 
       Prop("facing") { view: MediapipeCameraView, facing: String ->
         view.setFacing(facing)

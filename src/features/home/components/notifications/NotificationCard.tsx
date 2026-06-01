@@ -33,11 +33,25 @@ export default function NotificationCard({
     onPress,
 }: NotificationCardProps) {
     const date = new Date(time);
-    const month = date.toLocaleString('en-US', { month: 'long' });
-    const day = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
-    const hours = date.getHours();
-    const minutes = date.getMinutes();
-    const formattedTime = `${hours}:${minutes} ${hours > 12 ? 'PM' : 'AM'}`;
+    const isArabic = i18n.language === 'ar';
+
+    const locale = isArabic ? 'ar-EG' : 'en-US';
+
+    const month = date.toLocaleString(locale, { month: 'long' });
+
+    const day = date.toLocaleString(locale, {
+        day: '2-digit',
+    });
+
+    const hoursRaw = date.getHours();
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+
+    const isPM = hoursRaw >= 12;
+    const hours = hoursRaw % 12 || 12;
+
+    const ampm = isArabic ? (isPM ? 'م' : 'ص') : isPM ? 'PM' : 'AM';
+
+    const formattedTime = `${hours}:${minutes} ${ampm}`;
 
     const onClick = () => {
         if (!isRead) markAsRead(id);

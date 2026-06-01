@@ -24,7 +24,7 @@
 				"foregroundImage": "./assets/images/appicon2.png"
 			},
 			"jsEngine": "hermes",
-			
+
 			"googleServicesFile": "./google-services.json",
 			"predictiveBackGestureEnabled": false,
 			"softwareKeyboardLayoutMode": "resize",
@@ -84,7 +84,7 @@
 			[
 				"@react-native-google-signin/google-signin",
 				{
-					"iosUrlScheme": "com.googleusercontent.apps.287792070205-rmue7rsmhml1kgp3qhen4ks3gr9857pa"
+					"iosUrlScheme": "com.googleusercontent.apps.685238139033-sr6n9kpaeud7n6h9qm2tegqgd42bmkmo"
 				}
 			]
 		],

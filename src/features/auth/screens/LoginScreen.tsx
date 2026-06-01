@@ -5,6 +5,10 @@ import { StorageService } from '@/services/storage.service';
 import { StorageKeys } from '@/utils/constants';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { zodResolver } from '@hookform/resolvers/zod';
+import {
+    GoogleSignin,
+    statusCodes,
+} from '@react-native-google-signin/google-signin';
 import { AxiosError } from 'axios';
 import { Href, router } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -20,6 +24,7 @@ import {
 import Toast from 'react-native-toast-message';
 import { AuthForm } from '../components/AuthForm';
 import { AuthLayout } from '../components/AuthLayout';
+import GoogleButton from '../components/GoogleButton';
 import { authService } from '../services/auth.service';
 import { LoginForm, loginSchema } from '../validations/auth.schema';
 
@@ -30,6 +35,7 @@ export default function LoginScreen() {
     const [isLoading, setIsLoading] = useState(false);
     const [isCheckingToken, setIsCheckingToken] = useState(true);
     const [showPassword, setShowPassword] = useState(false);
+    const [isGoogleLoading, setIsGoogleLoading] = useState(false);
     const {
         control,
         handleSubmit,
@@ -98,6 +104,61 @@ export default function LoginScreen() {
             }
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const handleGoogleLogin = async () => {
+        try {
+            setIsGoogleLoading(true);
+            await GoogleSignin.hasPlayServices({
+                showPlayServicesUpdateDialog: true,
+            });
+
+            console.log('hasPlayServices');
+            const result = await GoogleSignin.signIn();
+
+            const idToken = result.data?.idToken;
+
+            if (!idToken) {
+                throw new Error('Google sign in failed');
+            }
+            const response = await authService.googleLogin(idToken);
+
+            const accessToken = response.data.access_token;
+            const refreshToken = response.data.refresh_token;
+
+            console.log('access token', accessToken);
+            console.log('refresh token', refreshToken);
+
+            await Promise.all([
+                deviceRegisterService.registerDevice(true),
+                StorageService.setItemSecure(StorageKeys.TOKEN, accessToken),
+                StorageService.setItemSecure(
+                    StorageKeys.REFRESH_TOKEN,
+                    refreshToken,
+                ),
+            ]);
+            Toast.show({
+                type: 'success',
+                text1: response.message,
+            });
+            router.push('/(app)/(home)' as Href);
+        } catch (error: any) {
+            console.log('ERROR code:', error.code);
+            console.log('ERROR message:', error.message);
+            console.log('ERROR full:', JSON.stringify(error));
+
+            if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+                console.log('User cancelled');
+            } else if (error.code === statusCodes.IN_PROGRESS) {
+                console.log('In progress');
+            } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+                console.log('Play services not available');
+            } else {
+                console.log('Unknown error');
+            }
+        } finally {
+            setIsGoogleLoading(false);
         }
     };
 
@@ -303,6 +364,18 @@ export default function LoginScreen() {
                         fullWidth
                         onPress={handleSubmit(onSubmit)}
                         disabled={isLoading}
+                    />
+                    <View className="flex-row items-center justify-center gap-2">
+                        <View className="flex-1 h-[1px] bg-[#E0E0E0]" />
+                        <Text className="text-[#63677E] text-md shrink-0">
+                            {t('auth.login.or')}
+                        </Text>
+                        <View className="flex-1 h-[1px] bg-[#E0E0E0]" />
+                    </View>
+                    <GoogleButton
+                        loading={isGoogleLoading}
+                        onPress={handleGoogleLogin}
+                        title={t('auth.login.signInWithGoogle')}
                     />
                     <View className="flex-row items-center justify-center gap-2">
                         <Text className="text-[#63677E] text-md">
