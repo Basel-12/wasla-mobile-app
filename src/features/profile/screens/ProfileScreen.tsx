@@ -82,6 +82,7 @@ export default function ProfileScreen() {
         },
     });
 
+
     const languageItems = [
         {
             key: 'ar',
