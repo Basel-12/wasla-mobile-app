@@ -21,6 +21,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 import '../../global.css';
+import { preloadModels } from '../../modules/src/modules/mediapipe';
 
 SplashScreen.preventAutoHideAsync();
 configureGoogleSignIn();
@@ -112,6 +113,10 @@ export default function RootLayout() {
 
         return () => unsubscribe();
     }, []);
+
+    useEffect(()=>{
+        preloadModels()
+    },[])
 
     const toastConfig = {
         success: ({ text1, text2 }: { text1?: string; text2?: string }) => (

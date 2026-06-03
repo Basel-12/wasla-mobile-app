@@ -24,13 +24,15 @@ import com.google.mediapipe.framework.image.BitmapImageBuilder
 import com.google.mediapipe.tasks.core.BaseOptions
 import com.google.mediapipe.tasks.core.Delegate
 import com.google.mediapipe.tasks.vision.core.RunningMode
-import com.google.mediapipe.tasks.vision.handlandmarker.HandLandmarker
-import com.google.mediapipe.tasks.vision.handlandmarker.HandLandmarkerResult
-import com.google.mediapipe.tasks.vision.facelandmarker.FaceLandmarker
-import com.google.mediapipe.tasks.vision.facelandmarker.FaceLandmarkerResult
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
-import java.util.concurrent.Future
+// import com.google.mediapipe.tasks.vision.handlandmarker.HandLandmarker
+// import com.google.mediapipe.tasks.vision.handlandmarker.HandLandmarkerResult
+// import com.google.mediapipe.tasks.vision.facelandmarker.FaceLandmarker
+// import com.google.mediapipe.tasks.vision.facelandmarker.FaceLandmarkerResult
+import com.google.mediapipe.tasks.vision.holisticlandmarker.HolisticLandmarker
+import com.google.mediapipe.tasks.vision.holisticlandmarker.HolisticLandmarkerResult
+// import java.util.concurrent.ExecutorService
+// import java.util.concurrent.Executors
+// import java.util.concurrent.Future
 import org.json.JSONObject
 import org.tensorflow.lite.Interpreter
 import java.io.FileInputStream
@@ -137,6 +139,74 @@ class SlidingWindowVoter(
 }
 
 
+class ActivationGate(
+    private val velocityThreshold: Float = 0.02f
+) {
+    private var prevLandmarks: FloatArray? = null
+
+    fun check(leftHand: FloatArray?, rightHand: FloatArray?): Boolean {
+        if (leftHand == null && rightHand == null) {
+            prevLandmarks = null
+            return false
+        }
+
+        val current = FloatArray(126).also { buf ->
+            leftHand?.copyInto(buf, 0)
+            rightHand?.copyInto(buf, 63)
+        }
+
+        val prev = prevLandmarks
+        prevLandmarks = current.copyOf()
+
+        if (prev == null) return true
+
+        var sumSq = 0f
+        for (i in current.indices) {
+            val diff = current[i] - prev[i]
+            sumSq += diff * diff
+        }
+        val velocity = Math.sqrt(sumSq.toDouble()).toFloat()
+        return velocity >= velocityThreshold
+    }
+
+    fun reset() { prevLandmarks = null }
+}
+
+// Crop face region from bitmap using face landmarks bounding box
+fun cropFace(
+    bitmap: Bitmap,
+    faceLandmarks: List<NormalizedLandmark>
+): Bitmap? {
+    if (faceLandmarks.isEmpty()) return null
+
+    val w = bitmap.width.toFloat()
+    val h = bitmap.height.toFloat()
+
+    // Get bounding box from landmarks
+    var minX = Float.MAX_VALUE; var maxX = Float.MIN_VALUE
+    var minY = Float.MAX_VALUE; var maxY = Float.MIN_VALUE
+
+    for (lm in faceLandmarks) {
+        if (lm.x() < minX) minX = lm.x()
+        if (lm.x() > maxX) maxX = lm.x()
+        if (lm.y() < minY) minY = lm.y()
+        if (lm.y() > maxY) maxY = lm.y()
+    }
+
+    // Add 20% padding around face
+    val padX = (maxX - minX) * 0.2f
+    val padY = (maxY - minY) * 0.2f
+
+    val left   = ((minX - padX) * w).toInt().coerceIn(0, bitmap.width)
+    val top    = ((minY - padY) * h).toInt().coerceIn(0, bitmap.height)
+    val right  = ((maxX + padX) * w).toInt().coerceIn(0, bitmap.width)
+    val bottom = ((maxY + padY) * h).toInt().coerceIn(0, bitmap.height)
+
+    if (right <= left || bottom <= top) return null
+
+    return Bitmap.createBitmap(bitmap, left, top, right - left, bottom - top)
+}
+
 // ─── Sign Classifier ──────────────────────────────────────────────────────────
 
 class ESLClassifier(private val context: Context) {
@@ -186,6 +256,12 @@ class ESLClassifier(private val context: Context) {
         // Build 163-float input: left(63) + right(63) + face(30) + emotion(7)
         val input = left + right + faceVec + neutralEmotion
 
+        // No hands at all → reset voter
+        if (leftHand == null && rightHand == null) {
+            voter.reset()
+            return mapOf("label" to "__no_hands__", "confidence" to 0f, "committed" to false)
+        }
+
         // Run inference
         val numClasses = idx2label.size
         val output = Array(1) { FloatArray(numClasses) }
@@ -204,15 +280,10 @@ class ESLClassifier(private val context: Context) {
         val top2Conf = probs[top2Idx]
         val margin   = top1Conf - top2Conf  // the key signal
 
-        // No hands at all → reset voter
-        if (leftHand == null && rightHand == null) {
-            voter.reset()
-            return mapOf("label" to "__no_hands__", "confidence" to 0f, "committed" to false)
-        }
+
 
 
         // If top-1 and top-2 are too close, the model is confused → skip this frame
-        // This handles مكار/كداب confusion without slowing down clean detections
         if (margin < 0.25f) {
             return mapOf(
                 "label"      to label,
@@ -236,37 +307,128 @@ class ESLClassifier(private val context: Context) {
     fun close() { interpreter?.close(); interpreter = null }
 }
 
+
+// ─── Emotion Classifier ──────────────────────────────────────────────────────────
+class EmotionClassifier(private val context: Context) {
+
+    private var interpreter: Interpreter? = null
+
+        // DeepFace model output order — what the TFLite model actually outputs
+    private val DEEPFACE_ORDER = listOf(
+        "angry", "disgust", "fear", "happy", "sad", "surprise", "neutral"
+    )
+    
+        // ESL model expected one-hot order — must match EMOTION_CLASSES in inference.py
+    private val ESL_ORDER = listOf(
+        "angry", "disgust", "fear", "happy", "neutral", "sad", "surprise"
+    )
+    
+    private val NEUTRAL_IDX_ESL = ESL_ORDER.indexOf("neutral")  // 4
+
+
+    fun load() {
+        val assetFd     = context.assets.openFd("models/emotion_model.tflite")
+        val inputStream = FileInputStream(assetFd.fileDescriptor)
+        val fileChannel = inputStream.channel
+        val model: MappedByteBuffer = fileChannel.map(
+            FileChannel.MapMode.READ_ONLY,
+            assetFd.startOffset,
+            assetFd.declaredLength
+        )
+        interpreter = Interpreter(model)
+        Log.d("EmotionClassifier", "Loaded emotion model")
+    }
+
+    data class EmotionOutput(
+        val oneHot:     FloatArray,
+        val confidence: Float
+    )
+
+    // Returns one-hot float array of length 7
+    // Input: 48×48 grayscale face crop from the camera frame
+
+    fun classify(faceBitmap: Bitmap): EmotionOutput {
+        val interp = interpreter ?: return EmotionOutput(
+            oneHot = neutralOneHot(),
+            confidence = 0f
+        )       
+
+        // Resize to 48×48 grayscale
+        val resized = Bitmap.createScaledBitmap(faceBitmap, 48, 48, true)
+
+        // Fill input tensor: shape (1, 48, 48, 1), float32, normalized [0,1]
+        val input = Array(1) { Array(48) { Array(48) { FloatArray(1) } } }
+
+        for (y in 0 until 48) {
+            for (x in 0 until 48) {
+                val pixel = resized.getPixel(x, y)
+                // Convert to grayscale: Y = 0.299R + 0.587G + 0.114B
+                val r = (pixel shr 16) and 0xFF
+                val g = (pixel shr 8)  and 0xFF
+                val b =  pixel         and 0xFF
+                input[0][y][x][0] = (0.299f * r + 0.587f * g + 0.114f * b) / 255f
+            }
+        }
+        resized.recycle()
+
+        val output = Array(1) { FloatArray(7) }
+        interp.run(input, output)
+
+        val probs = output[0]
+
+        // Step 1: argmax in DeepFace output order
+        val deepfaceIdx =
+            probs.indices.maxByOrNull { probs[it] }
+                ?: return EmotionOutput(
+                    oneHot = neutralOneHot(),
+                    confidence = 0f
+                )
+
+        //confidence
+        val confidence  = probs[deepfaceIdx]
+
+        // Step 2: get the emotion string using DeepFace order
+        val emotionStr = DEEPFACE_ORDER[deepfaceIdx]
+
+        // Step 3: find index in ESL order
+        val eslIdx = ESL_ORDER.indexOf(emotionStr).takeIf { it >= 0 } ?: NEUTRAL_IDX_ESL
+
+        Log.d("EmotionClassifier", "DeepFace[$deepfaceIdx]=$emotionStr → ESL[$eslIdx]")
+
+        // Step 4: return one-hot in ESL order
+        return EmotionOutput(
+            oneHot     = FloatArray(7).also { it[eslIdx] = 1f },
+            confidence = confidence
+        )
+    }
+
+    fun neutralOneHot(): FloatArray = FloatArray(7).also { it[NEUTRAL_IDX_ESL] = 1f }
+
+    fun close() { interpreter?.close(); interpreter = null }
+}
+
+// ─── MediapipeCameraView ──────────────────────────────────────────────────────────
+
 class MediapipeCameraView(context: Context, appContext: AppContext) : ExpoView(context, appContext) {
 
     private val onLandmarks by EventDispatcher()
     private val onError     by EventDispatcher()
     private val onReady     by EventDispatcher()
-    private val onSignDetected by EventDispatcher() 
+    private val onSignDetected by EventDispatcher()
+    private val onEmotionDetected by EventDispatcher()
 
     private var textureView: TextureView
-
-    private var handLandmarker: HandLandmarker? = null
-    private var faceLandmarker: FaceLandmarker? = null
 
     private var cameraDevice:    CameraDevice?         = null
     private var captureSession:  CameraCaptureSession? = null
     private var inferenceReader: ImageReader?          = null
 
-    private val INFERENCE_WIDTH  = 640
-    private val INFERENCE_HEIGHT = 480
+    private val INFERENCE_WIDTH  = 1280
+    private val INFERENCE_HEIGHT = 720
 
     private var cameraThread: HandlerThread? = null
     private var cameraHandler: Handler?      = null
 
-    // [FIX] These are now var + nullable so they can be recreated on every startCamera() call.
-    //       Previously they were val initialized once at construction — after onDetachedFromWindow()
-    //       called quitSafely()/shutdown() on them they were permanently dead, making re-entry
-    //       to the screen produce a blank camera with no inference ever running.
-    private var modelThread:       HandlerThread?   = null
-    private var modelHandler:      Handler?         = null
-    private var inferenceExecutor: ExecutorService? = null
-
-    @Volatile private var modelsReady = false
 
     private var reusableBitmap:    Bitmap?   = null
     private var reusableArgbArray: IntArray? = null
@@ -277,9 +439,31 @@ class MediapipeCameraView(context: Context, appContext: AppContext) : ExpoView(c
 
     private var facing      = "front"
     private val eslClassifier = ESLClassifier(context)
+    private val activationGate = ActivationGate(velocityThreshold = 0.02f) 
+    private val emotionClassifier  = EmotionClassifier(context)
+    @Volatile
+    private var cachedEmotion =
+        EmotionClassifier.EmotionOutput(
+            oneHot = FloatArray(7).also { it[4] = 1f },
+            confidence = 1f
+        )
+    private var emotionFrameCount  = 0
+    private val EMOTION_INTERVAL   = 5  // run emotion every 5 frames, matches DEEPFACE_INTERVAL
+
     private var previewSize = Size(1280, 720)
 
+    private val ESL_EMOTION_CLASSES = listOf(
+        "angry", "disgust", "fear", "happy", "neutral", "sad", "surprise"
+    )
+
+    private fun emotionOneHotToString(oneHot: FloatArray): String {
+        val idx = oneHot.indices.maxByOrNull { oneHot[it] } ?: 4
+        return ESL_EMOTION_CLASSES.getOrElse(idx) { "neutral" }
+    }
+
     init {
+
+        ModelManager.preload(context)
         textureView = TextureView(context)
         addView(textureView, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
 
@@ -331,62 +515,28 @@ class MediapipeCameraView(context: Context, appContext: AppContext) : ExpoView(c
 
     private fun configureTransform(viewWidth: Int, viewHeight: Int) {
         if (viewWidth == 0 || viewHeight == 0) return
-        val matrix  = Matrix()
-        val centerX = viewWidth  / 2f
-        val centerY = viewHeight / 2f
-        val scaleX  = viewWidth.toFloat()  / previewSize.height
-        val scaleY  = viewHeight.toFloat() / previewSize.width
-        val scale   = maxOf(scaleX, scaleY)
-        matrix.setScale(scale, scale, centerX, centerY)
+
+        val matrix = Matrix()
+
+        val viewW = viewWidth.toFloat()
+        val viewH = viewHeight.toFloat()
+
+        val bufferW = previewSize.height.toFloat()
+        val bufferH = previewSize.width.toFloat()
+
+        val scale = maxOf(viewW / bufferW, viewH / bufferH)
+
+        val dx = (viewW - bufferW * scale) / 2f
+        val dy = (viewH - bufferH * scale) / 2f
+
+        matrix.setScale(scale, scale)
+        matrix.postTranslate(dx, dy)
+
+
         textureView.setTransform(matrix)
     }
 
-    private fun initLandmarkers() {
-        try {
-            val baseHandOptions = BaseOptions.builder()
-                .setModelAssetPath("models/hand_landmarker.task")
-                .setDelegate(Delegate.GPU)
-                .build()
 
-            val handOptions = HandLandmarker.HandLandmarkerOptions.builder()
-                .setBaseOptions(baseHandOptions)
-                .setNumHands(2)
-                .setMinHandDetectionConfidence(0.5f)
-                .setMinHandPresenceConfidence(0.5f)
-                .setMinTrackingConfidence(0.5f)
-                .setRunningMode(RunningMode.IMAGE)
-                .build()
-
-            handLandmarker = HandLandmarker.createFromOptions(context, handOptions)
-            Log.d("MediapipeCameraView", "HandLandmarker ready")
-
-            val baseFaceOptions = BaseOptions.builder()
-                .setModelAssetPath("models/face_landmarker.task")
-                .setDelegate(Delegate.GPU)
-                .build()
-
-            val faceOptions = FaceLandmarker.FaceLandmarkerOptions.builder()
-                .setBaseOptions(baseFaceOptions)
-                .setNumFaces(1)
-                .setMinFaceDetectionConfidence(0.5f)
-                .setMinFacePresenceConfidence(0.5f)
-                .setMinTrackingConfidence(0.5f)
-                .setRunningMode(RunningMode.IMAGE)
-                .build()
-
-            faceLandmarker = FaceLandmarker.createFromOptions(context, faceOptions)
-            Log.d("MediapipeCameraView", "FaceLandmarker ready")
-
-            eslClassifier.load()
-
-            modelsReady = true
-            Log.d("MediapipeCameraView", "All models ready — inference enabled")
-
-        } catch (e: Exception) {
-            Log.e("MediapipeCameraView", "Error initializing landmarkers: ${e.message}")
-            onError(mapOf("message" to (e.message ?: "Failed to initialize landmarkers")))
-        }
-    }
 
     private fun startCamera() {
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
@@ -397,18 +547,8 @@ class MediapipeCameraView(context: Context, appContext: AppContext) : ExpoView(c
         }
 
         try {
-            // [FIX] Create fresh instances of modelThread, modelHandler, and inferenceExecutor
-            //       on every startCamera() call. The previous instances were shut down in
-            //       stopCamera() (called by onDetachedFromWindow on screen exit), so reusing
-            //       them on re-entry would silently drop all model loading and inference tasks.
-            modelsReady = false
-
-            modelThread  = HandlerThread("ModelLoadThread").also { it.start() }
-            modelHandler = Handler(modelThread!!.looper)
-            inferenceExecutor = Executors.newFixedThreadPool(2)
 
             // Kick off model loading in parallel with camera hardware open
-            modelHandler!!.post { initLandmarkers() }
 
             cameraThread = HandlerThread("MediaPipeCameraThread").also { it.start() }
             cameraHandler = Handler(cameraThread!!.looper)
@@ -440,7 +580,7 @@ class MediapipeCameraView(context: Context, appContext: AppContext) : ExpoView(c
                 val image = reader.acquireLatestImage() ?: return@setOnImageAvailableListener
                 try {
                     val now = System.currentTimeMillis()
-                    if (now - lastProcessedTime >= PROCESS_INTERVAL_MS && modelsReady) {
+                    if (now - lastProcessedTime >= PROCESS_INTERVAL_MS && ModelManager.isReady) {
                         lastProcessedTime = now
                         processYuvImage(image)
                     }
@@ -503,6 +643,7 @@ class MediapipeCameraView(context: Context, appContext: AppContext) : ExpoView(c
                                 CaptureRequest.NOISE_REDUCTION_MODE_FAST)
                             set(CaptureRequest.EDGE_MODE,
                                 CaptureRequest.EDGE_MODE_FAST)
+                            set(CaptureRequest.CONTROL_ZOOM_RATIO, 1.0f)
                         }
 
                     session.setRepeatingRequest(requestBuilder.build(), null, cameraHandler)
@@ -581,93 +722,106 @@ class MediapipeCameraView(context: Context, appContext: AppContext) : ExpoView(c
     }
 
     private fun processFrame(bitmap: Bitmap) {
-        // [FIX] Guard against a null/shutdown executor (can happen during teardown race)
-        val executor = inferenceExecutor ?: return
-
+        if (!isRunning || !ModelManager.isReady) return
         try {
-            val mpImageForHands = BitmapImageBuilder(bitmap).build()
-            val mpImageForFace  = BitmapImageBuilder(bitmap).build()
+            val mpImageForHolistic = BitmapImageBuilder(bitmap).build()
 
-            val handFuture: Future<HandLandmarkerResult?> =
-                executor.submit<HandLandmarkerResult?> {
-                    handLandmarker?.detect(mpImageForHands)
+            val result: HolisticLandmarkerResult = ModelManager.holisticLandmarker?.detect(mpImageForHolistic) ?: return
+
+            // ── Force-cast Java raw types to typed Kotlin lists ───────────────────────────
+            @Suppress("UNCHECKED_CAST")
+            val leftLandmarks  = result.leftHandLandmarks()  as? List<NormalizedLandmark> ?: emptyList()
+            @Suppress("UNCHECKED_CAST")
+            val rightLandmarks = result.rightHandLandmarks() as? List<NormalizedLandmark> ?: emptyList()
+            @Suppress("UNCHECKED_CAST")
+            val faceLandmarks  = result.faceLandmarks()      as? List<NormalizedLandmark> ?: emptyList()
+
+            val leftHandNorm:  FloatArray? = if (leftLandmarks.isNotEmpty())  normalizeHand(leftLandmarks)  else null
+            val rightHandNorm: FloatArray? = if (rightLandmarks.isNotEmpty()) normalizeHand(rightLandmarks) else null
+            val faceNorm:      FloatArray? = if (faceLandmarks.isNotEmpty())  normalizeFace(faceLandmarks)  else null
+
+            // ── Emotion — run every N frames, cache result ────────────────────────────
+            emotionFrameCount++
+            if (emotionFrameCount >= EMOTION_INTERVAL && faceLandmarks.isNotEmpty()) {
+                emotionFrameCount = 0
+                val faceCrop = cropFace(bitmap, faceLandmarks)
+                if (faceCrop != null) {
+                    ModelManager.emotionClassifier?.classify(faceCrop)?.let {
+                        cachedEmotion = it
+                    }
+                    faceCrop.recycle()
+
+                    val emotionStr = emotionOneHotToString(cachedEmotion.oneHot)
+                    onEmotionDetected(mapOf(
+                        "emotion" to emotionStr, 
+                        "confidence" to cachedEmotion.confidence,
+                        "timestamp" to System.currentTimeMillis()
+                        ))
                 }
-            val faceFuture: Future<FaceLandmarkerResult?> =
-                executor.submit<FaceLandmarkerResult?> {
-                    faceLandmarker?.detect(mpImageForFace)
-                }
-
-            val handResult = handFuture.get()
-            val faceResult = faceFuture.get()
-
-            var leftHandNorm:  FloatArray? = null
-            var rightHandNorm: FloatArray? = null
-
-            handResult?.landmarks()?.forEachIndexed { i, hand ->
-                val side = handResult.handednesses()
-                    .getOrNull(i)?.firstOrNull()?.categoryName() ?: return@forEachIndexed
-                    val normalized = normalizeHand(hand)
-                    if (side == "Left")  leftHandNorm  = normalized
-                    if (side == "Right") rightHandNorm = normalized
             }
 
-              // ── Sign classification ───────────────────────────────────────────
-            val faceNorm = faceResult?.faceLandmarks()
-            ?.firstOrNull()
-            ?.let { normalizeFace(it) }
+            val isActive = activationGate.check(leftHandNorm, rightHandNorm)
+            val signResult: Map<String, Any>? = if (isActive) {
+                ModelManager.eslClassifier?.classify(leftHandNorm, rightHandNorm, faceNorm)
+            } else {
+                ModelManager.eslClassifier?.reset()
+                null
+            }
 
-            val signResult = eslClassifier.classify(leftHandNorm, rightHandNorm, faceNorm)
+            // ── Build JS payload ──────────────────────────────────────────────────────────
+            val handsData = mutableListOf<List<Map<String, Float>>>()
 
-              // ── Build landmark payload for JS (unchanged) ─────────────────────
-            val handsData = handResult?.landmarks()?.map { hand ->
-                hand.map { lm -> mapOf("x" to lm.x(), "y" to lm.y(), "z" to lm.z()) }
-            } ?: emptyList()
+            if (leftLandmarks.isNotEmpty()) {
+                val leftList = mutableListOf<Map<String, Float>>()
+                for (lm: NormalizedLandmark in leftLandmarks) {
+                    leftList.add(mapOf<String, Float>("x" to lm.x(), "y" to lm.y(), "z" to lm.z()))
+                }
+                handsData.add(leftList)
+            }
 
-            val handednessData = handResult?.handednesses()?.map { h ->
-                h.firstOrNull()?.categoryName() ?: "Unknown"
-            } ?: emptyList()
+            if (rightLandmarks.isNotEmpty()) {
+                val rightList = mutableListOf<Map<String, Float>>()
+                for (lm: NormalizedLandmark in rightLandmarks) {
+                    rightList.add(mapOf<String, Float>("x" to lm.x(), "y" to lm.y(), "z" to lm.z()))
+                }
+                handsData.add(rightList)
+            }
 
-            val faceData = faceResult?.faceLandmarks()?.firstOrNull()?.map { lm ->
-                mapOf("x" to lm.x(), "y" to lm.y(), "z" to lm.z())
-            } ?: emptyList()
+            val handednessData = mutableListOf<String>()
+            if (leftLandmarks.isNotEmpty())  handednessData.add("Left")
+            if (rightLandmarks.isNotEmpty()) handednessData.add("Right")
 
-            // ── Emit landmark event (unchanged) ──────────────────────────────
+            val faceData = mutableListOf<Map<String, Float>>()
+            for (lm: NormalizedLandmark in faceLandmarks) {
+                faceData.add(mapOf<String, Float>("x" to lm.x(), "y" to lm.y(), "z" to lm.z()))
+            }
+
             onLandmarks(mapOf(
-                "hands"      to handsData,
+                "hands"     to handsData,
                 "handedness" to handednessData,
-                "face"       to faceData,
-                "timestamp"  to System.currentTimeMillis()
+                "face"      to faceData,
+                "timestamp" to System.currentTimeMillis()
             ))
 
-            // ── Emit sign event (new) ─────────────────────────────────────────
             if (signResult != null) {
                 onSignDetected(signResult)
             }
-
-
         } catch (e: Exception) {
             Log.e("MediapipeCameraView", "Frame processing error: ${e.message}")
         }
     }
 
-    // [FIX] stopCamera() now also shuts down modelThread and inferenceExecutor,
-    //       because startCamera() will always create fresh ones on the next call.
-    //       Previously these were only torn down in onDetachedFromWindow(), which meant
-    //       they were never recreated when the screen was re-entered.
     private fun stopCamera() {
         isRunning   = false
-        modelsReady = false
         try {
             captureSession?.stopRepeating()
             captureSession?.close()
             cameraDevice?.close()
             inferenceReader?.close()
             cameraThread?.quitSafely()
-            handLandmarker?.close()
-            faceLandmarker?.close()
-            // Tear down the per-session threads — startCamera() recreates them
-            modelThread?.quitSafely()
-            inferenceExecutor?.shutdown()
+            // handLandmarker?.close()
+            // faceLandmarker?.close()
+            activationGate.reset() // reset velocity tracker
         } catch (e: Exception) {
             Log.e("MediapipeCameraView", "Error stopping camera: ${e.message}")
         } finally {
@@ -676,11 +830,8 @@ class MediapipeCameraView(context: Context, appContext: AppContext) : ExpoView(c
             inferenceReader   = null
             cameraThread      = null
             cameraHandler     = null
-            handLandmarker    = null
-            faceLandmarker    = null
-            modelThread       = null
-            modelHandler      = null
-            inferenceExecutor = null
+            // handLandmarker    = null
+            // faceLandmarker    = null
             reusableBitmap?.recycle()
             reusableBitmap    = null
             reusableArgbArray = null

@@ -22,6 +22,41 @@ import {
     MediapipeCameraView,
 } from '../../../../modules/src/modules/mediapipe';
 import BottomBar from '../components/BottomBar';
+import FaceEmotionBox from '../components/FaceEmotionBox';
+
+function LandmarkOverlay({ landmarks }: { landmarks: LandmarkResult | null }) {
+    if (!landmarks) return null;
+    return (
+        <View
+            style={{ position: 'absolute', top: 100, left: 16 }}
+            pointerEvents="none"
+        >
+            <View className="bg-black/70 px-3 py-1 rounded-full mb-2">
+                <Text className="text-green-400 text-sm font-bold">
+                    Hands: {landmarks.hands.length}
+                </Text>
+            </View>
+            {landmarks.hands.map((hand, i) => (
+                <View
+                    key={i}
+                    className="bg-black/70 px-3 py-1 rounded-full mb-1"
+                >
+                    <Text className="text-yellow-300 text-xs">
+                        {landmarks.handedness?.[i] ?? `Hand ${i}`} wrist: x=
+                        {hand[0]?.x.toFixed(2)} y={hand[0]?.y.toFixed(2)}
+                    </Text>
+                </View>
+            ))}
+            {landmarks.face.length > 0 && (
+                <View className="bg-black/70 px-3 py-1 rounded-full">
+                    <Text className="text-blue-400 text-sm font-bold">
+                        Face: {landmarks.face.length} pts
+                    </Text>
+                </View>
+            )}
+        </View>
+    );
+}
 
 export default function ScanScreen() {
     const { t } = useTranslation();
@@ -30,6 +65,13 @@ export default function ScanScreen() {
     const [error, setError] = useState<string | null>(null);
     const insets = useSafeAreaInsets();
     const [signResult, setSignResult] = useState('');
+    const [emotion, setEmotion] = useState<{
+        emotion: string;
+        confidence: number;
+    }>({
+        emotion: 'neutral',
+        confidence: 0,
+    });
 
     useEffect(() => {
         const checkPermissions = async () => {
@@ -67,7 +109,6 @@ export default function ScanScreen() {
                 translucent={true}
                 backgroundColor="transparent"
             />
-            {/* <CustomHeader title={t('camera.scan')} /> */}
 
             <View className="flex-1">
                 <MediapipeCameraView
@@ -86,10 +127,22 @@ export default function ScanScreen() {
                                 'is ',
                                 confidence,
                             );
-                            setSignResult(label);
+                            setSignResult(`${label}`);
                         }
                     }}
+                    onEmotionDetected={(e) => {
+                        const { emotion, confidence } = e.nativeEvent;
+                        console.log(confidence);
+
+                        setEmotion({
+                            emotion,
+                            confidence,
+                        });
+                    }}
                 />
+
+                {/* ── Debug landmark overlay ── */}
+                {/* <LandmarkOverlay landmarks={landmarks} /> */}
 
                 {/* Overlay UI */}
                 <View className="absolute inset-0 " pointerEvents="box-none">
@@ -178,6 +231,36 @@ export default function ScanScreen() {
                             </BlurView>
                         </Pressable>
                     </View>
+
+                    {/* face square emotion  */}
+                    <FaceEmotionBox
+                        face={landmarks?.face || []}
+                        emotion={emotion.emotion}
+                    />
+                    <BlurView
+                        intensity={60}
+                        tint="dark"
+                        className="absolute right-5 top-32 rounded-3xl overflow-hidden"
+                    >
+                        <View className="flex-row items-center px-3 py-1 gap-3">
+                            <Ionicons
+                                name="happy-outline"
+                                size={24}
+                                color="#22D3EE"
+                            />
+
+                            <View>
+                                <Text className="text-cyan-400 font-bold text-lg">
+                                    {emotion.emotion}
+                                </Text>
+
+                                <Text className="text-white font-semibold">
+                                    {Math.round(emotion.confidence * 100)}%
+                                </Text>
+                            </View>
+                        </View>
+                    </BlurView>
+
                     {/* ── Landmark badges ── */}
                     {isReady && landmarks && (
                         <View className="absolute top-24 left-0 right-0 items-center">
