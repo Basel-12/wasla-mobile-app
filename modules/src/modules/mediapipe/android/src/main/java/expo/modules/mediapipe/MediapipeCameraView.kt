@@ -448,7 +448,7 @@ class MediapipeCameraView(context: Context, appContext: AppContext) : ExpoView(c
             confidence = 1f
         )
     private var emotionFrameCount  = 0
-    private val EMOTION_INTERVAL   = 5  // run emotion every 5 frames, matches DEEPFACE_INTERVAL
+    private val EMOTION_INTERVAL   = 20 // run emotion every 20 frames
 
     private var previewSize = Size(1280, 720)
 

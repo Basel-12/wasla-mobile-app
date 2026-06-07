@@ -1,11 +1,13 @@
 import CustomHeader from '@/components/CustomHeader';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { BlurView } from 'expo-blur';
+import * as Brightness from 'expo-brightness';
 import { router } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
     ActivityIndicator,
+    Animated,
     PermissionsAndroid,
     Platform,
     Pressable,
@@ -21,6 +23,7 @@ import {
     LandmarkResult,
     MediapipeCameraView,
 } from '../../../../modules/src/modules/mediapipe';
+import i18n from '../../../i18n/i18n';
 import BottomBar from '../components/BottomBar';
 import FaceEmotionBox from '../components/FaceEmotionBox';
 
@@ -57,6 +60,15 @@ function LandmarkOverlay({ landmarks }: { landmarks: LandmarkResult | null }) {
         </View>
     );
 }
+const emotionDisplayAr: Record<string, string> = {
+    angry: 'غاضب',
+    disgust: 'اشمئزاز',
+    fear: 'خايف',
+    happy: 'سعيد',
+    neutral: 'عادي',
+    sad: 'حزين',
+    surprise: 'متفاجئ',
+};
 
 export default function ScanScreen() {
     const { t } = useTranslation();
@@ -65,13 +77,44 @@ export default function ScanScreen() {
     const [error, setError] = useState<string | null>(null);
     const insets = useSafeAreaInsets();
     const [signResult, setSignResult] = useState('');
+    const isArabic = i18n.language === 'ar';
+
     const [emotion, setEmotion] = useState<{
         emotion: string;
         confidence: number;
     }>({
-        emotion: 'neutral',
+        emotion: isArabic ? emotionDisplayAr['neutral'] : 'neutral',
         confidence: 0,
     });
+
+    const flashOpacity = useRef(new Animated.Value(0)).current;
+    const [flashOn, setFlashOn] = useState(false);
+    const originalBrightness = useRef<number | null>(null);
+
+    const triggerScreenFlash = async () => {
+        if (flashOn) {
+            // toggle OFF — restore brightness and hide overlay
+            setFlashOn(false);
+            if (originalBrightness.current !== null) {
+                await Brightness.setBrightnessAsync(originalBrightness.current);
+            } else await Brightness.setBrightnessAsync(0.5);
+            Animated.timing(flashOpacity, {
+                toValue: 0,
+                duration: 150,
+                useNativeDriver: true,
+            }).start();
+        } else {
+            // toggle ON — max brightness + white overlay
+            originalBrightness.current = await Brightness.getBrightnessAsync();
+            setFlashOn(true);
+            await Brightness.setBrightnessAsync(1);
+            Animated.timing(flashOpacity, {
+                toValue: 0.92, // near-white, not fully opaque so you still see the subject
+                duration: 80,
+                useNativeDriver: true,
+            }).start();
+        }
+    };
 
     useEffect(() => {
         const checkPermissions = async () => {
@@ -135,7 +178,9 @@ export default function ScanScreen() {
                         console.log(confidence);
 
                         setEmotion({
-                            emotion,
+                            emotion: isArabic
+                                ? emotionDisplayAr[emotion]
+                                : emotion,
                             confidence,
                         });
                     }}
@@ -202,9 +247,9 @@ export default function ScanScreen() {
                             </Text>
                         </BlurView>
 
-                        {/* Reload button */}
+                        {/* flash light  */}
                         <Pressable
-                            onPress={() => {}}
+                            onPress={triggerScreenFlash}
                             android_ripple={{
                                 color: 'rgba(255,255,255,0.2)',
                                 borderless: true,
@@ -213,7 +258,7 @@ export default function ScanScreen() {
                         >
                             <BlurView
                                 intensity={60}
-                                tint="dark"
+                                tint={flashOn ? 'light' : 'dark'} // visual feedback
                                 style={{
                                     width: 32,
                                     height: 32,
@@ -224,9 +269,9 @@ export default function ScanScreen() {
                                 }}
                             >
                                 <Ionicons
-                                    name="flash-outline"
+                                    name={flashOn ? 'flash' : 'flash-outline'}
                                     size={20}
-                                    color="white"
+                                    color={flashOn ? '#FACC15' : 'white'} // yellow when on
                                 />
                             </BlurView>
                         </Pressable>

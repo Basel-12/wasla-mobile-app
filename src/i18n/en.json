@@ -117,7 +117,8 @@
     "tabs": {
         "home": "Home",
         "scan": "camera",
-        "profile": "Profile"
+        "profile": "Profile",
+        "favourite": "Favorite"
     },
     "home": {
         "header": {
@@ -214,7 +215,18 @@
         "sign": "Detected Sign",
         "translation": "English Translation",
         "sound": "Play Sound",
-        "favourite": "Add To Fav"
+        "favourite": "Add To Fav",
+        "success": "Added Successfully",
+        "error": "Failed To Add"
+    },
+    "favourite": {
+        "title": "Favourite Words",
+        "description": "Words you saved for quick access",
+        "deleted": "Deleted Successfully",
+        "error": "Failed to delete",
+        "playEN": "Play in en",
+        "delete": "Delete",
+        "empty": "No Favourite Words Added"
     },
     "app": {
         "logout": {

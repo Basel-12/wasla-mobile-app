@@ -38,7 +38,7 @@ export default function ProfileCard({
         >
             <View
                 pointerEvents="none"
-                className={`w-10 h-10 items-center justify-center rounded-xl ${dangerous ? 'bg-[##fbeceb]' : 'bg-[#f2f0fc]'}`}
+                className={`w-10 h-10 items-center justify-center rounded-xl ${dangerous ? 'bg-[#fbeceb]' : 'bg-[#f2f0fc]'}`}
             >
                 {icon}
             </View>

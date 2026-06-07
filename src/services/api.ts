@@ -57,6 +57,18 @@ api.interceptors.response.use(
             return Promise.reject(error);
         }
 
+        const skipRefreshUrls = [
+            'api/v1/auth/login',
+            'api/v1/auth/refresh-token',
+        ];
+
+        const isAuthRoute = skipRefreshUrls.some((url) =>
+            originalRequest.url?.includes(url),
+        );
+        if (isAuthRoute) {
+            return Promise.reject(error);
+        }
+
         // a refresh is already in flight → queue this request
         if (isRefreshing) {
             return new Promise((resolve, reject) => {
@@ -82,7 +94,7 @@ api.interceptors.response.use(
                 return Promise.reject(error);
             }
 
-            const { data } = await api.post('/v1/auth/refresh-token', {
+            const { data } = await api.post('api/v1/auth/refresh-token', {
                 refresh_token: refreshToken,
             });
 
