@@ -11,12 +11,12 @@ export default function AppLayout() {
                 name="(home)"
                 options={{ title: 'Home', headerShown: false }}
             />
-            {/* <Tabs.Screen
-                name="/scanner"
-                options={{ title: 'Scan', headerShown: false }}
-            /> */}
             <Tabs.Screen
-                name="(profile)/index"
+                name="(favourites)"
+                options={{ title: 'Favorite words', headerShown: false }}
+            />
+            <Tabs.Screen
+                name="(profile)"
                 options={{ title: 'Profile', headerShown: false }}
             />
         </Tabs>

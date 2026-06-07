@@ -77,7 +77,11 @@ export default function LoginScreen() {
             //set the token in the storage
             await StorageService.setItemSecure(
                 StorageKeys.TOKEN,
-                response.data,
+                response.data.access_token,
+            );
+            await StorageService.setItemSecure(
+                StorageKeys.REFRESH_TOKEN,
+                response.data.refresh_token,
             );
             await deviceRegisterService.registerDevice(true);
             router.push('/(app)/(home)' as Href);

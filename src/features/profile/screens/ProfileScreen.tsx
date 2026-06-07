@@ -8,11 +8,12 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
     ActivityIndicator,
     ImageBackground,
+    RefreshControl,
     ScrollView,
     Text,
     TouchableOpacity,
@@ -39,6 +40,7 @@ export default function ProfileScreen() {
     const [logoutVisible, setLogoutVisible] = useState(false);
     const [logoutLoading, setLogoutLoading] = useState(false);
     const queryClient = useQueryClient();
+    const [refreshing, setRefreshing] = useState(false);
     const { openGallery, openCamera } = useImagePicker((uri) => {
         setAvatar(uri);
         setSheetVisible(false);
@@ -53,6 +55,7 @@ export default function ProfileScreen() {
     const confirmLogout = async () => {
         try {
             setLogoutLoading(true);
+            queryClient.clear();
             await TokenService.Logout();
             setLogoutVisible(false);
         } catch (error) {
@@ -81,7 +84,6 @@ export default function ProfileScreen() {
             });
         },
     });
-
 
     const languageItems = [
         {
@@ -155,6 +157,12 @@ export default function ProfileScreen() {
         },
     ];
 
+    const onRefresh = useCallback(async () => {
+        setRefreshing(true);
+        await queryClient.invalidateQueries({ queryKey: ['currentUser'] });
+        setRefreshing(false);
+    }, [queryClient]);
+
     return (
         <SafeAreaView className="flex-1">
             <ProfileHeader />
@@ -164,6 +172,15 @@ export default function ProfileScreen() {
                     paddingBottom: insets.bottom + 64,
                 }}
                 showsVerticalScrollIndicator={false}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
+                        colors={['#5140E8']}
+                        tintColor={'#5140E8'}
+                        progressBackgroundColor={'#f6f6f8'}
+                    />
+                }
             >
                 <View className="p-5 gap-6">
                     {/* profile picture */}
@@ -264,24 +281,22 @@ export default function ProfileScreen() {
 
                     {/* profile cards */}
                     <View className="flex-1 gap-6">
-                        {isLoading ? (
-                            profileItems.map((item) => (
-                                <ProfileCardSkeleton key={item.key} />
-                            ))
-                        ) : (
-                            profileItems.map((item) => (
-                                <ProfileCard
-                                    key={item.key}
-                                    icon={item.icon}
-                                    title={item.title}
-                                    data={item.data}
-                                    showEditIcon={true}
-                                    dangerous={item.dangerous}
-                                    onPress={item.onPress}
-                                    disabled={item.disabled}
-                                />
-                            ))
-                        )}
+                        {isLoading
+                            ? profileItems.map((item) => (
+                                  <ProfileCardSkeleton key={item.key} />
+                              ))
+                            : profileItems.map((item) => (
+                                  <ProfileCard
+                                      key={item.key}
+                                      icon={item.icon}
+                                      title={item.title}
+                                      data={item.data}
+                                      showEditIcon={true}
+                                      dangerous={item.dangerous}
+                                      onPress={item.onPress}
+                                      disabled={item.disabled}
+                                  />
+                              ))}
                     </View>
                 </View>
             </ScrollView>

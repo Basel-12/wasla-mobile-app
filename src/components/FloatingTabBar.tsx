@@ -25,6 +25,12 @@ export default function FloatingTabBar({ state, navigation }: any) {
             label: t('tabs.scan'),
         },
         {
+            key: 'favourites',
+            routeName: '(favourites)',
+            icon: 'heart',
+            label: t('tabs.favourite'),
+        },
+        {
             key: 'profile',
             routeName: '(profile)',
             icon: 'person',
@@ -52,7 +58,7 @@ export default function FloatingTabBar({ state, navigation }: any) {
                     borderRadius: 999,
                 }}
             >
-                <View className="flex-row items-center justify-between px-6">
+                <View className="flex-row items-center justify-around px-6">
                     {tabs.map((tab) => {
                         const isFocused = currentRoute === tab.routeName;
 

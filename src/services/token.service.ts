@@ -6,6 +6,7 @@ export const TokenService = {
     Logout: async () => {
         try {
             await StorageService.removeItemSecure(StorageKeys.TOKEN);
+            await StorageService.removeItemSecure(StorageKeys.REFRESH_TOKEN);
             router.dismissAll?.();
             router.replace('/(auth)/login' as Href);
         } catch (error) {

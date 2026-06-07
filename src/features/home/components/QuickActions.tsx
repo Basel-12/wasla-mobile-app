@@ -19,7 +19,7 @@ export default function QuickActions() {
             title: t('home.quickActions.favorites'),
             description: t('home.quickActions.favoritesDescription'),
             iconColor: '#ED4181',
-            onPress: () => {},
+            onPress: () => router.push('/(app)/(favourites)'),
         },
         {
             icon: 'settings',
