@@ -126,7 +126,8 @@
         "home": "الرئيسية",
         "scan": "الكاميرا",
         "profile": "الحساب",
-        "favourite": "المفضلة"
+        "favourite": "المفضلة",
+        "analytics": "إحصائيات"
     },
     "home": {
         "header": {
@@ -255,5 +256,16 @@
             "title": "مرحبا بعودتك",
             "description": "أنت الآن متصل بالإنترنت"
         }
+    },
+    "analytics": {
+        "title": "الإحصائيات",
+        "overview": "نظرة عامة",
+        "totalSigns": "إجمالي الإشارات",
+        "thisWeek": "هذا الأسبوع",
+        "sessions": "الجلسات",
+        "avgConfidence": "متوسط الثقة",
+        "avgConfidenceHint": "عبر جميع الإشارات المؤكدة",
+        "topSigns": "أكثر الإشارات",
+        "noData": "لا توجد بيانات بعد. ابدأ بمسح الإشارات!"
     }
 }

@@ -16,6 +16,10 @@ export default function AppLayout() {
                 options={{ title: 'Favorite words', headerShown: false }}
             />
             <Tabs.Screen
+                name="(analytics)"
+                options={{ title: 'Analytics', headerShown: false }}
+            />
+            <Tabs.Screen
                 name="(profile)"
                 options={{ title: 'Profile', headerShown: false }}
             />

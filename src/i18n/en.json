@@ -118,7 +118,8 @@
         "home": "Home",
         "scan": "camera",
         "profile": "Profile",
-        "favourite": "Favorite"
+        "favourite": "Favorite",
+        "analytics": "Stats"
     },
     "home": {
         "header": {
@@ -247,5 +248,16 @@
             "title": "Welcome Back",
             "description": "You are now connected to the internet"
         }
+    },
+    "analytics": {
+        "title": "Analytics",
+        "overview": "Overview",
+        "totalSigns": "Total Signs",
+        "thisWeek": "This Week",
+        "sessions": "Sessions",
+        "avgConfidence": "Avg Confidence",
+        "avgConfidenceHint": "across all committed detections",
+        "topSigns": "Top Signs",
+        "noData": "No data yet. Start scanning signs!"
     }
 }
