@@ -31,6 +31,12 @@ export default function FloatingTabBar({ state, navigation }: any) {
             label: t('tabs.favourite'),
         },
         {
+            key: 'analytics',
+            routeName: '(analytics)',
+            icon: 'stats-chart',
+            label: t('tabs.analytics'),
+        },
+        {
             key: 'profile',
             routeName: '(profile)',
             icon: 'person',

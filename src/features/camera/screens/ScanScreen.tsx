@@ -24,6 +24,7 @@ import {
     MediapipeCameraView,
 } from '../../../../modules/src/modules/mediapipe';
 import i18n from '../../../i18n/i18n';
+import { analyticsQueue } from '../../analytics/services/analytics.queue';
 import BottomBar from '../components/BottomBar';
 import FaceEmotionBox from '../components/FaceEmotionBox';
 
@@ -128,6 +129,7 @@ export default function ScanScreen() {
             }
         };
         checkPermissions();
+        return () => { analyticsQueue.flush(); };
     }, [Platform.OS]);
 
     if (error) {
@@ -170,6 +172,7 @@ export default function ScanScreen() {
                                 'is ',
                                 confidence,
                             );
+                            analyticsQueue.push({ label, confidence, timestamp: Date.now() });
                             setSignResult(`${label}`);
                         }
                     }}
