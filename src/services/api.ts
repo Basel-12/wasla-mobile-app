@@ -5,8 +5,8 @@ import { router } from 'expo-router';
 import { StorageService } from './storage.service';
 
 const api = axios.create({
-    baseURL: 'https://api.vocalaid.app',
-    // baseURL: 'http://192.168.112.1:5000',
+    // baseURL: 'https://api.vocalaid.app',
+    baseURL: 'http://localhost:3000',
     timeout: 10000, // Optional: Set a timeout for requests
     headers: {
         'Content-Type': 'application/json',
